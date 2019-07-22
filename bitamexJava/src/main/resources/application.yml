@@ -1,0 +1,49 @@
+server:
+   port: 8081
+
+spring:
+   profiles:
+      active: test      
+---
+spring:
+   profiles: prod
+   data:
+       mongodb:
+            uri : mongodb://gaiaexchange:gaiamongo123456@161.202.101.108:27017/gaiaexchange?maxIdleTimeMS=3000
+            maxConnectionIdleTime : 6000
+   redis:
+        database: 0
+        host: 127.0.0.1
+        port: 6379
+        password:
+        pool:
+            max-active : 8
+            max-wait : -1
+            max-idle : 8
+            min-idle : 0
+        timeout: 1000
+   datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://192.168.88.106:3306/ginex?ssl=false
+        username: ginex_master
+        password: Ij&&P5tc7@YtK&i%
+          
+
+---
+spring:
+   profiles: test
+   data:
+      mongodb:
+         uri:  mongodb://192.168.86.201:27017/test?maxIdleTimeMS=3000
+         maxConnectionIdleTime : 6000
+   datasource:
+     driver-class-name: com.mysql.jdbc.Driver
+     url: jdbc:mysql://192.168.86.72:3306/world?user=root&password=root&useSSL=false
+     data-username: root
+     data-password: root
+
+mybatis:
+  config-location: classpath:mybatis-spring.xml
+  #mapper-locations: classpath:Mapper/*Mapper.xml
+
+
