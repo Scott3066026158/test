@@ -7,10 +7,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.gaia.autotrade.owsock.bean.SecurityInfo;
-import com.gaia.autotrade.owsock.bean.MarketDepthData;
-import com.gaia.autotrade.owsock.bean.MarketTickData;
-import com.gaia.autotrade.owsock.bean.MarketUserInfo;
+import com.gaia.autotrade.owsock.market_bean.MarketDepthData;
+import com.gaia.autotrade.owsock.market_bean.MarketTickData;
+import com.gaia.autotrade.owsock.market_bean.MarketUserInfo;
+import com.gaia.autotrade.owsock.market_bean.SecurityInfo;
 
 public class MarketDataManager {
 

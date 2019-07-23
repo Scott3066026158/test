@@ -1,4 +1,4 @@
-package com.gaia.autotrade.owsock.bean;
+package com.gaia.autotrade.owsock.trade_bean;
 
 public class CoinPosition
 {

@@ -1,8 +1,8 @@
-package com.gaia.autotrade.owsock.bean;
+package com.gaia.autotrade.owsock.market_bean;
 
 /** 
- 历史数据信息
- 
+历史数据信息
+
 */
 public class HistoryDataInfo
 {

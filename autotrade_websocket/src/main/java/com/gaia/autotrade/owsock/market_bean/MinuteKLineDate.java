@@ -1,4 +1,4 @@
-package com.gaia.autotrade.owsock.bean;
+package com.gaia.autotrade.owsock.market_bean;
 
 public class MinuteKLineDate {
     public int m_cycle;

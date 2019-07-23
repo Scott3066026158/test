@@ -3,24 +3,22 @@ package com.gaia.autotrade.owsock.service;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.gaia.autotrade.owsock.base.BaseService;
 import com.gaia.autotrade.owsock.base.Binary;
 import com.gaia.autotrade.owsock.base.CMessage;
-import com.gaia.autotrade.owsock.bean.SecurityInfo;
-import com.gaia.autotrade.owsock.bean.CoinNewData;
-import com.gaia.autotrade.owsock.bean.HistoryDataInfo;
-import com.gaia.autotrade.owsock.bean.LatestDataInfo;
-import com.gaia.autotrade.owsock.bean.MarketDepthData;
-import com.gaia.autotrade.owsock.bean.MarketTickData;
-import com.gaia.autotrade.owsock.bean.MarketUserInfo;
-import com.gaia.autotrade.owsock.bean.SecurityLatestDataTiny;
 import com.gaia.autotrade.owsock.global.BusinessIDs;
 import com.gaia.autotrade.owsock.global.DataCenter;
 import com.gaia.autotrade.owsock.manager.MarketDataManager;
+import com.gaia.autotrade.owsock.market_bean.CoinNewData;
+import com.gaia.autotrade.owsock.market_bean.HistoryDataInfo;
+import com.gaia.autotrade.owsock.market_bean.LatestDataInfo;
+import com.gaia.autotrade.owsock.market_bean.MarketDepthData;
+import com.gaia.autotrade.owsock.market_bean.MarketTickData;
+import com.gaia.autotrade.owsock.market_bean.MarketUserInfo;
+import com.gaia.autotrade.owsock.market_bean.SecurityInfo;
+import com.gaia.autotrade.owsock.market_bean.SecurityLatestDataTiny;
 
 public class QuoteService extends BaseService{
 

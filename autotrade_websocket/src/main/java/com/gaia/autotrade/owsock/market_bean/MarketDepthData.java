@@ -1,4 +1,4 @@
-package com.gaia.autotrade.owsock.bean;
+package com.gaia.autotrade.owsock.market_bean;
 
 import java.util.ArrayList;
 import java.util.Arrays;

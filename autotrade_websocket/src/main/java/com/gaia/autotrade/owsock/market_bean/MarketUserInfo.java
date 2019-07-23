@@ -1,4 +1,4 @@
-package com.gaia.autotrade.owsock.bean;
+package com.gaia.autotrade.owsock.market_bean;
 
 /***
  * 行情用户信息

@@ -2,11 +2,11 @@ package com.gaia.autotrade.owsock.util;
 
 import java.util.ArrayList;
 
-import com.gaia.autotrade.owsock.bean.CoinData;
 import com.gaia.autotrade.owsock.bean.Indicator;
 import com.gaia.autotrade.owsock.bean.IndicatorData;
-import com.gaia.autotrade.owsock.bean.KeyFields;
-import com.gaia.autotrade.owsock.bean.MinuteKLineDate;
+import com.gaia.autotrade.owsock.market_bean.CoinData;
+import com.gaia.autotrade.owsock.market_bean.KeyFields;
+import com.gaia.autotrade.owsock.market_bean.MinuteKLineDate;
 
 import owchart.owlib.Base.CMathLib;
 import owchart.owlib.Base.RefObject;
