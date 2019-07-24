@@ -9,22 +9,43 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.alibaba.fastjson.JSON;
-import com.gaia.autotrade.owsock.bean.BackInfo;
-import com.gaia.autotrade.owsock.bean.JsonMessage;
+import com.gaia.autotrade.http.bean.JsonMessage;
+import com.gaia.autotrade.http.bean.SymbolInfo;
 import com.gaia.autotrade.owsock.manager.MarketDataManager;
+import com.gaia.autotrade.owsock.market_bean.SecurityInfo;
 
 
 @Controller
 public class BaseInfoController {
 	//获取所有交易对
 	@RequestMapping(value="/v1/common/symbols",method = RequestMethod.GET)
-	public void getAllSymbol() {
-		MarketDataManager  manger=MarketDataManager.getInstance();
-		List<String> tradePairList = manger.getTradePairList();	
-		JsonMessage json=new JsonMessage();
-		json.data=new ArrayList<BackInfo>();
-		json.data.add(new BackInfo());
+	public String getAllSymbol() {
+		MarketDataManager  manager = MarketDataManager.getInstance();
+		List<SecurityInfo> securityList = manager.getSecurityList();
+		List<SymbolInfo> symbolList = new ArrayList<SymbolInfo>();
+		for(SecurityInfo info : securityList) {
+			SymbolInfo symbolInfo = new SymbolInfo();
+			symbolInfo.setBaseCurrency(info.m_firstLeg);
+			
+			  symbolInfo.setQuotoCurrency(quotoCurrency);
+			  symbolInfo.setPricePrecision(pricePrecision);
+			  symbolInfo.setAmountPrecision(amountPrecision);
+			  symbolInfo.setSymbolPartition(symbolPartition); 
+			  symbolInfo.setSymbol(symbol);
+			  symbolInfo.setState(state); 
+			  symbolInfo.setValuePrecision(valuePrecision);
+			  symbolInfo.setMinOrderAmt(minOrderAmt);
+			  symbolInfo.setMaxOrderAmt(maxOrderAmt);
+			  symbolInfo.setMinOrderValue(minOrderValue);
+			  symbolInfo.setLeverageRatio(leverageRatio);
+			 
+		}
 		
+		JsonMessage jsonMsg = new JsonMessage();
+		jsonMsg.setData(symbolList);
+		jsonMsg.setStatus("ok");
+		jsonMsg.setTs(System.currentTimeMillis());
+		return JSON.toJSONString(jsonMsg);
 	}
 	
 	//获取所有币种
@@ -33,12 +54,15 @@ public class BaseInfoController {
 		
 		
 	}
+	
 	@Test
 	//获取当前系统时间
 	@RequestMapping(value="/v1/common/timestamp",method = RequestMethod.GET)
-	public void getNowTime() {
-		long currentTimeMillis = System.currentTimeMillis();
-		JSON.toJSON(currentTimeMillis);
+	public String getNowTime() {	
+		JsonMessage jsonMsg = new JsonMessage();
+		jsonMsg.setData(System.currentTimeMillis());
+		return JSON.toJSONString(jsonMsg);
+		
 			
 	}
 

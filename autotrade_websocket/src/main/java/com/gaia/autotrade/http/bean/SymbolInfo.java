@@ -1,6 +1,6 @@
-package com.gaia.autotrade.owsock.bean;
+package com.gaia.autotrade.http.bean;
 
-public class BackInfo {
+public class SymbolInfo {
 
 	private String baseCurrency;
 	private String quotoCurrency;
@@ -15,11 +15,11 @@ public class BackInfo {
 	private Long minOrderValue;
 	private int leverageRatio;
 
-	public BackInfo() {
+	public SymbolInfo() {
 
 	}
 
-	public BackInfo(String baseCurrency, String quotoCurrency, Integer pricePrecision, Integer amountPrecision,
+	public SymbolInfo(String baseCurrency, String quotoCurrency, Integer pricePrecision, Integer amountPrecision,
 			String symbolPartition, String symbol, String state, Integer valuePrecision, Long minOrderAmt,
 			Long maxOrderAmt, Long minOrderValue, int leverageRatio) {
 		super();
