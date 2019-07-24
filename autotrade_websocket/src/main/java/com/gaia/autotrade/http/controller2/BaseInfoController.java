@@ -27,17 +27,17 @@ public class BaseInfoController {
 			SymbolInfo symbolInfo = new SymbolInfo();
 			symbolInfo.setBaseCurrency(info.m_firstLeg);
 			
-			  symbolInfo.setQuotoCurrency(quotoCurrency);
-			  symbolInfo.setPricePrecision(pricePrecision);
-			  symbolInfo.setAmountPrecision(amountPrecision);
-			  symbolInfo.setSymbolPartition(symbolPartition); 
-			  symbolInfo.setSymbol(symbol);
-			  symbolInfo.setState(state); 
-			  symbolInfo.setValuePrecision(valuePrecision);
-			  symbolInfo.setMinOrderAmt(minOrderAmt);
-			  symbolInfo.setMaxOrderAmt(maxOrderAmt);
-			  symbolInfo.setMinOrderValue(minOrderValue);
-			  symbolInfo.setLeverageRatio(leverageRatio);
+//			  symbolInfo.setQuotoCurrency(quotoCurrency);
+//			  symbolInfo.setPricePrecision(pricePrecision);
+//			  symbolInfo.setAmountPrecision(amountPrecision);
+//			  symbolInfo.setSymbolPartition(symbolPartition); 
+//			  symbolInfo.setSymbol(symbol);
+//			  symbolInfo.setState(state); 
+//			  symbolInfo.setValuePrecision(valuePrecision);
+//			  symbolInfo.setMinOrderAmt(minOrderAmt);
+//			  symbolInfo.setMaxOrderAmt(maxOrderAmt);
+//			  symbolInfo.setMinOrderValue(minOrderValue);
+//			  symbolInfo.setLeverageRatio(leverageRatio);
 			 
 		}
 		
