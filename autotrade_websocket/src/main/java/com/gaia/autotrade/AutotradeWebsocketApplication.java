@@ -10,7 +10,8 @@ import com.gaia.autotrade.owsock.global.DataCenter;
 public class AutotradeWebsocketApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(AutotradeWebsocketApplication.class, args);
+		ConfigurableApplicationContext context = SpringApplication.run(AutotradeWebsocketApplication.class, args);
+		Applicaton.setContext(context);
 		DataCenter.StartService();
 		DataCenter.Connect();
 	}

@@ -6,14 +6,14 @@ public class SymbolInfo {
 	private String quotoCurrency;
 	private Integer pricePrecision;
 	private Integer amountPrecision;
-	private String symbolPartition;
+	private String symbolPartition = "";
 	private String symbol;
 	private String state;
-	private Integer valuePrecision;
-	private Long minOrderAmt;
-	private Long maxOrderAmt;
-	private Long minOrderValue;
-	private int leverageRatio;
+	private Integer valuePrecision = 0;
+	private Long minOrderAmt = 0L;
+	private Long maxOrderAmt = 0L;
+	private Long minOrderValue = 0L;
+	private int leverageRatio = 0;
 
 	public SymbolInfo() {
 
@@ -131,5 +131,16 @@ public class SymbolInfo {
 
 	public void setLeverageRatio(int leverageRatio) {
 		this.leverageRatio = leverageRatio;
+	}
+	
+	public String convertStatusToState(int status){
+		if(status == 0) {
+			this.state = "online";
+		}else if(status == 1) {
+			this.state = "suspend";
+		}else {
+			this.state = "offline";
+		}
+		return this.state;
 	}
 }

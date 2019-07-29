@@ -32,5 +32,12 @@ public class SubDataBean {
 		this.m_pair = pair;
 	}
 
-
+	//复制
+	public SubDataBean copy() {
+		SubDataBean newBean = new SubDataBean();
+		newBean.setPair(new String(this.m_pair));
+		newBean.setSid(new String(this.m_sid));
+		newBean.setTopic(new String(this.m_topic));
+		return newBean;
+	}
 }

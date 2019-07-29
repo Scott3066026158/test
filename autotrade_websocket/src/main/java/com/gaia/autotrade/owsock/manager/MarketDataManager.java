@@ -11,10 +11,14 @@ import com.gaia.autotrade.owsock.market_bean.MarketDepthData;
 import com.gaia.autotrade.owsock.market_bean.MarketTickData;
 import com.gaia.autotrade.owsock.market_bean.MarketUserInfo;
 import com.gaia.autotrade.owsock.market_bean.SecurityInfo;
+import com.gaia.autotrade.ws.manager.WebSocketSubManager;
 
 public class MarketDataManager {
 
 	private static MarketDataManager m_self = null;
+	
+	// Ws订阅者管理器
+	private WebSocketSubManager m_subDataManager;
 	// 行情登录用户信息
 	private MarketUserInfo m_userInfo = new MarketUserInfo();
 	// 缓存Depth行情数据
@@ -22,13 +26,15 @@ public class MarketDataManager {
 	// 缓存Tick行情数据
 	private ConcurrentHashMap<String, MarketTickData> m_tickDataMap = new ConcurrentHashMap<String, MarketTickData>();
 	// 合约信息表
-	public ConcurrentHashMap<String, SecurityInfo> m_securitiesMap = new ConcurrentHashMap<String, SecurityInfo>();
+	private ConcurrentHashMap<String, SecurityInfo> m_securitiesMap = new ConcurrentHashMap<String, SecurityInfo>();
 	// 交易对子表
-	public ConcurrentHashMap<String, String> m_tradePairMap = new ConcurrentHashMap<String, String>();
-
+	private ConcurrentHashMap<String, String> m_tradePairMap = new ConcurrentHashMap<String, String>();
+	// 币种表
+	private ConcurrentHashMap<String, String> m_coinMap = new ConcurrentHashMap<String, String>();
+	
 	// 私有化构造函数
 	private MarketDataManager() {
-
+		WebSocketSubManager.addDepend(m_subDataManager);
 	}
 
 	// 获取自身
@@ -179,6 +185,40 @@ public class MarketDataManager {
 	public List<String> getTradePairList(){
 		ArrayList<String> result = new ArrayList<String>();
 		Iterator<Entry<String, String>> iter = m_tradePairMap.entrySet().iterator();
+		while (iter.hasNext()) {
+			Map.Entry<String, String> entry = (Map.Entry<String, String>) iter.next();
+			String val = entry.getValue();
+			result.add(new String(val));
+		}
+		return result;
+	}
+	
+	/**
+	 * 检测交易对子是否存在
+	 * @param pair交易对子
+	 * @return 存在返回true 不存在返回false
+	 */
+	public boolean isExistPair(String pair) {
+		return m_tradePairMap.containsKey(pair);
+	}
+	
+	/**
+	 * put coinCode
+	 * @param coinCode 币种
+	 * @return true
+	 */
+	public boolean putCoinCode(String coinCode) {
+		m_coinMap.put(coinCode, coinCode);
+		return true;
+	}
+	
+	/**
+	 * 获取所有币种列表
+	 * @return 币种列表
+	 */
+	public List<String> getCoinCodeList() {
+		List<String> result = new ArrayList<String>();
+		Iterator<Entry<String, String>> iter = m_coinMap.entrySet().iterator();
 		while (iter.hasNext()) {
 			Map.Entry<String, String> entry = (Map.Entry<String, String>) iter.next();
 			String val = entry.getValue();

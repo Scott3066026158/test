@@ -19,20 +19,32 @@ import com.gaia.autotrade.owsock.trade_bean.WithdrawalApplyRecord;
 public class TradeService extends BaseService {
 
     public static final int SERVICEID_TDSERVICE = 55;
-
-    public TradeService() {
+    
+    //唯一对象
+    public static TradeService m_self;
+    
+    private TradeService() {
         SetServiceID(SERVICEID_TDSERVICE);
     }
 
-    public TradeDataManager m_securityServiceEx;
-
-
+    public TradeDataManager m_tradeDataManager;
 
     public int GenerateReqID() {
         int id = 1000;
         return id++;
     }
-
+    
+	//单例
+	public static TradeService getInstance() {
+		if (m_self == null) {
+			synchronized (TradeService.class) {
+				if (m_self == null) {
+					m_self = new TradeService();
+				}
+			}
+		}
+		return m_self;
+	}
 
     //接收消息
     public void OnReceive(CMessage message) {
@@ -60,6 +72,7 @@ public class TradeService extends BaseService {
             case BusinessIDs.API_TD_NOTIFY_POSITION:
                 OnRtnPosition(binary);
                 break;
+            //充值地址回调
             case BusinessIDs.API_TD_DEPOSIT:
                 OnRtnRechargeAddr(binary);
                 break;
@@ -98,7 +111,6 @@ public class TradeService extends BaseService {
             default:
                 break;
         }
-
     }
 
     //登录回报
@@ -138,7 +150,7 @@ public class TradeService extends BaseService {
             String traderID = binary.ReadString();
             ArrayList<CoinOrder> vec = new ArrayList<CoinOrder>();
             ReadOrderInfos(binary, vec);
-            m_securityServiceEx.OnOrders(vec);
+            m_tradeDataManager.OnOrders(vec);
 
         } catch (IOException e) {
         }
@@ -151,7 +163,7 @@ public class TradeService extends BaseService {
             String traderID = binary.ReadString();
             ArrayList<CoinPosition> vec = new ArrayList<>();
             ReadPositions(binary, vec);
-            m_securityServiceEx.OnPositions(vec);
+            m_tradeDataManager.OnPositions(vec);
         } catch (IOException e) {
         }
     }
@@ -162,7 +174,7 @@ public class TradeService extends BaseService {
             String traderID = binary.ReadString();
             ArrayList<CoinTrade> vec = new ArrayList<CoinTrade>();
             ReadTradeRecords(binary, vec);
-            m_securityServiceEx.OnTrades(vec);
+            m_tradeDataManager.OnTrades(vec);
         } catch (IOException e) {
         }
     }
@@ -196,7 +208,7 @@ public class TradeService extends BaseService {
         }
         catch ( Exception e)
         {}
-        m_securityServiceEx.OnHistoryWithdraw(records);
+        m_tradeDataManager.OnHistoryWithdraw(records);
     }
 
     //撤单回报
@@ -213,7 +225,7 @@ public class TradeService extends BaseService {
             cancelOrder.m_volume = binary.ReadDouble();
             cancelOrder.m_dir = binary.ReadInt();
             cancelOrder.m_cancelID = binary.ReadString();
-            m_securityServiceEx.OnCancelOrderRecord(cancelOrder);
+            m_tradeDataManager.OnCancelOrderRecord(cancelOrder);
         }catch (IOException e){
 
         }
@@ -229,9 +241,8 @@ public class TradeService extends BaseService {
             address.m_code = binary.ReadString();
             address.m_addr = binary.ReadString();
             address.m_memo = binary.ReadString();
-            m_securityServiceEx.OnAddress(address);
+            m_tradeDataManager.OnAddress(address);
             binary.Close();
-
         }
         catch (IOException e)
         {
@@ -255,7 +266,7 @@ public class TradeService extends BaseService {
             withdrawalApplyRecord.m_withdrawalTime = binary.ReadString();
             withdrawalApplyRecord.m_finishStatus = binary.ReadString();
             withdrawalApplyRecord.m_progress = binary.ReadDouble();
-            m_securityServiceEx.OnWithdrawalApplyRecord(withdrawalApplyRecord);
+            m_tradeDataManager.OnWithdrawalApplyRecord(withdrawalApplyRecord);
         }catch(IOException e)
         {
         }
@@ -267,7 +278,7 @@ public class TradeService extends BaseService {
             CoinOrder order = new CoinOrder();
             ReadOrderInfo(binary, order);
             vec.add(order);
-            m_securityServiceEx.OnOrders(vec);
+            m_tradeDataManager.OnOrders(vec);
         } catch (Exception e) {
         }
     }
@@ -281,7 +292,7 @@ public class TradeService extends BaseService {
             CoinPosition position = new CoinPosition();
             ReadPosition(binary, position);
             vec.add(position);
-            m_securityServiceEx.OnPositions(vec);
+            m_tradeDataManager.OnPositions(vec);
         } catch (IOException e) {
         }
     }
@@ -291,7 +302,7 @@ public class TradeService extends BaseService {
             String investorID = binary.ReadString();
             ArrayList<CoinTrade> vec = new ArrayList<>();
             ReadTradeRecords(binary, vec);
-            m_securityServiceEx.OnTrades(vec);
+            m_tradeDataManager.OnTrades(vec);
         } catch (IOException e) {
         }
     }

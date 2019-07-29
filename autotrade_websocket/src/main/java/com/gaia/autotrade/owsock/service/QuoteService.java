@@ -20,26 +20,18 @@ import com.gaia.autotrade.owsock.market_bean.MarketUserInfo;
 import com.gaia.autotrade.owsock.market_bean.SecurityInfo;
 import com.gaia.autotrade.owsock.market_bean.SecurityLatestDataTiny;
 
-public class QuoteService extends BaseService{
+public class QuoteService extends BaseService {
 
-	public QuoteService() {
-		this("");
-	}
+	//唯一对象
+	private static QuoteService m_self;
 
-	public QuoteService(String serverName) {
-		super(serverName);
-		SetSocketID(-1);
-		SetCompressType(BaseService.COMPRESSTYPE_NONE);
-		SetServiceID(SERVICEID_MD);
-	}
-
-	//获取行情数据管理类
+	// 获取行情数据管理类
 	private MarketDataManager m_marketDataManager = MarketDataManager.getInstance();
-	//获取行情用户信息
+	// 获取行情用户信息
 	private MarketUserInfo m_userInfo = m_marketDataManager.getMarketUserInfo();
-	//为了快速，先定死requestID
+	// 为了快速，先定死requestID
 	private int m_requestID = 123456;
-	
+
 	public static final int FUNCTIONID_MD_PUSHDATA = 0;
 	public static final int FUNCTIONID_MD_PUSHDATATINY = 1;
 	public static final int FUNCTIONID_MD_STOPPUSHDATATINY = 2;
@@ -50,12 +42,21 @@ public class QuoteService extends BaseService{
 	public static final int SERVICEID_MD = 0;
 
 	
-    
-	//连接行情服务
+	public QuoteService() {
+		this("");
+	}
+
+	public QuoteService(String serverName) {
+		super(serverName);
+		SetSocketID(-1);
+		SetCompressType(BaseService.COMPRESSTYPE_NONE);
+		SetServiceID(SERVICEID_MD);
+	}
+	// 连接行情服务
 	public int ConnectServer(String url) {
 		int socketID = ConnectToServer(url);
 		SetSocketID(socketID);
-		
+
 		if (socketID > 0) {
 			ReqLogin();
 			ReqSecurityInfo();
@@ -64,89 +65,98 @@ public class QuoteService extends BaseService{
 		}
 		return socketID;
 	}
+	
+	//单例
+	public static QuoteService getInstance() {
+		if (m_self == null) {
+			synchronized (QuoteService.class) {
+				if (m_self == null) {
+					m_self = new QuoteService();
+				}
+			}
+		}
+		return m_self;
+	}
 
 	public void OnReceive(CMessage message) {
 		System.out.println("收到行情数据!functionID:" + message.m_functionID);
 		Binary binary = new Binary();
 		binary.Write(message.m_body, message.m_bodyLength);
 		switch (message.m_functionID) {
-			//登录回调
-			case BusinessIDs.RSP_QUOTE_LOGIN:
-				RevLogin(binary);
-				break;
-			//交易对子信息回调
-			case BusinessIDs.RSP_QRY_COININFO:
-				RevSecurityInfo(binary);
-				break;
-			//交易对子回调
-			case BusinessIDs.RSP_QUOTE_CODES:
-				RevPairInfo(binary);
-				break;
-			//深度行情回调(包括Depth与Tick)
-			case FUNCTIONID_MD_PUSHDATA:
-				RevPushData(binary);
-				break;
-			//简易行情回调(只有Tiny)
-			case FUNCTIONID_MD_PUSHDATATINY:
-				RevPushDataTiny(binary);
-				break;
-			//K线数据订阅
-			case FUNCTIONID_MD_GETHISTORYDATA:
-				RevPushKLine(binary);
-				break;
-			default:
-				break;
-			}
+		// 登录回调
+		case BusinessIDs.RSP_QUOTE_LOGIN:
+			RevLogin(binary);
+			break;
+		// 交易对子信息回调
+		case BusinessIDs.RSP_QRY_COININFO:
+			RevSecurityInfo(binary);
+			break;
+		// 交易对子回调
+		case BusinessIDs.RSP_QUOTE_CODES:
+			RevPairInfo(binary);
+			break;
+		// 深度行情回调(包括Depth与Tick)
+		case FUNCTIONID_MD_PUSHDATA:
+			RevPushData(binary);
+			break;
+		// 简易行情回调(只有Tiny)
+		case FUNCTIONID_MD_PUSHDATATINY:
+			RevPushDataTiny(binary);
+			break;
+		// K线数据订阅
+		case FUNCTIONID_MD_GETHISTORYDATA:
+			RevPushKLine(binary);
+			break;
+		default:
+			break;
+		}
 	}
 
 	private void RevPushKLine(Binary binary) {
-		
+
 	}
 
 	private void RevPushDataTiny(Binary binary) {
-        LatestDataInfo dataInfo = new LatestDataInfo();
-        ArrayList<SecurityLatestDataTiny> datas = new ArrayList<>();
-        QuoteService.GetLatestDatasTiny(dataInfo, datas, binary);
-        int size = datas.size();
-        if(size > 0) {
-            for(int i = 0; i < size; i++)
-            {
-            	SecurityLatestDataTiny data = datas.get(i);
-            	System.out.println(data);
-            }
-        }
+		LatestDataInfo dataInfo = new LatestDataInfo();
+		ArrayList<SecurityLatestDataTiny> datas = new ArrayList<>();
+		QuoteService.GetLatestDatasTiny(dataInfo, datas, binary);
+		int size = datas.size();
+		if (size > 0) {
+			for (int i = 0; i < size; i++) {
+				SecurityLatestDataTiny data = datas.get(i);
+				System.out.println(data);
+			}
+		}
 	}
 
 	private void RevPushData(Binary binary) {
-        LatestDataInfo dataInfo = new LatestDataInfo();
-        ArrayList<CoinNewData> datas = new ArrayList<CoinNewData>();
-        QuoteService.GetLatestDatas(dataInfo, datas, binary);
-        int size = datas.size();
-        if(size > 0) {
-            for(int i = 0; i < size; i++)
-            {
-            	CoinNewData data = datas.get(i);
-            	//Depth Market Data
-            	if(data.m_type == 117){
-            		RevDepthData(data);
-                //Tick Market Data
-            	}else if(data.m_type == 116){
-            		RevTickData(data);
-            	}else {
-            		System.out.println("行情接收到了未知数据");
-            	}
-            }
-        }
+		LatestDataInfo dataInfo = new LatestDataInfo();
+		ArrayList<CoinNewData> datas = new ArrayList<CoinNewData>();
+		QuoteService.GetLatestDatas(dataInfo, datas, binary);
+		int size = datas.size();
+		if (size > 0) {
+			for (int i = 0; i < size; i++) {
+				CoinNewData data = datas.get(i);
+				// Depth Market Data
+				if (data.m_type == 117) {
+					RevDepthData(data);
+					// Tick Market Data
+				} else if (data.m_type == 116) {
+					RevTickData(data);
+				} else {
+					System.out.println("行情接收到了未知数据");
+				}
+			}
+		}
 	}
-	
+
 	private void RevTickData(CoinNewData data) {
 		MarketTickData tickData = new MarketTickData();
 		tickData.coinNewDataToMarketTickData(data);
 		m_marketDataManager.putTickData(tickData);
 	}
 
-	private void RevDepthData(CoinNewData data)
-	{
+	private void RevDepthData(CoinNewData data) {
 		MarketDepthData depthData = new MarketDepthData();
 		depthData.coinNewDataToMarketDepthData(data);
 		m_marketDataManager.putDepthData(depthData);
@@ -161,7 +171,7 @@ public class QuoteService extends BaseService{
 			e.printStackTrace();
 		}
 	}
-    
+
 	private int GenerateReqID() {
 		return 0;
 	}
@@ -180,19 +190,31 @@ public class QuoteService extends BaseService{
 			for (int i = 0; i < size; i++) {
 				String code = binary.ReadString();
 				codes.add(code);
-				if(i == size) {
+				if (i == size) {
 					sb.append(code);
-				}else {
+				} else {
 					sb.append(code + ",");
 				}
 			}
-			if(!sb.toString().equals("")) {
+			if (!sb.toString().equals("")) {
 				SubMarketTickData(sb.toString());
 				SubMarketDepthData(sb.toString());
 			}
 			m_marketDataManager.putTradePairList(codes);
+			// 因为行情没有获取所有币种接口所以通过交易对子获取币种
+			RevCoinCode(codes);
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+
+	// 通过交易对子析出所有币种
+	public void RevCoinCode(List<String> pairList) {
+		for (String pair : pairList) {
+			String[] codes = pair.split("[/]");
+			for (String code : codes) {
+				m_marketDataManager.putCoinCode(code);
+			}
 		}
 	}
 
@@ -203,12 +225,12 @@ public class QuoteService extends BaseService{
 	public int PushLatestDatasTiny(int requestID, LatestDataInfo dataInfo) {
 		return Send(FUNCTIONID_MD_PUSHDATATINY, requestID, GetSocketID(), dataInfo) > 0 ? 1 : 0;
 	}
-	
 
-	//请求历史数据
+	// 请求历史数据
 	public int GetHistoryDatas(int requestID, HistoryDataInfo dataInfo) {
 		return Send(FUNCTIONID_MD_GETHISTORYDATA, requestID, GetSocketID(), dataInfo) > 0 ? 1 : 0;
 	}
+
 	/**
 	 * 发送数据
 	 * 
@@ -292,14 +314,10 @@ public class QuoteService extends BaseService{
 	/**
 	 * 发送历史数据请求
 	 * 
-	 * @param functionID
-	 *            功能ID
-	 * @param requestID
-	 *            请求ID
-	 * @param socketID
-	 *            连接ID
-	 * @param dataInfo
-	 *            数据信息
+	 * @param functionID 功能ID
+	 * @param requestID  请求ID
+	 * @param socketID   连接ID
+	 * @param dataInfo   数据信息
 	 * @return 状态
 	 */
 	public int Send(int functionID, int requestID, int socketID, HistoryDataInfo dataInfo) {
@@ -322,7 +340,7 @@ public class QuoteService extends BaseService{
 		}
 		return ret;
 	}
-	
+
 	/**
 	 * 获取最新数据
 	 * 
@@ -383,7 +401,7 @@ public class QuoteService extends BaseService{
 		}
 		return 1;
 	}
-	
+
 	public static int GetLatestDatasTiny(LatestDataInfo dataInfo, List<SecurityLatestDataTiny> datas, Binary binary) {
 		try {
 			int size = binary.ReadInt();
@@ -404,7 +422,6 @@ public class QuoteService extends BaseService{
 		return 1;
 	}
 
-	
 	public static int GetLatestDatas(LatestDataInfo dataInfo, List<CoinNewData> datas, byte[] body, int bodyLength) {
 		try {
 			Binary binary = new Binary();
@@ -481,7 +498,7 @@ public class QuoteService extends BaseService{
 		}
 		return 1;
 	}
-	
+
 	/**
 	 * 发送最新数据请求
 	 * 
@@ -539,8 +556,8 @@ public class QuoteService extends BaseService{
 	 */
 	public void SubMarketDepthData(String codes) {
 		LatestDataInfo dataInfo = new LatestDataInfo();
- 		dataInfo.m_codes = codes;
- 		dataInfo.m_format = 1;
+		dataInfo.m_codes = codes;
+		dataInfo.m_format = 1;
 		DataCenter.GetMDService().StopPushLatestDepthDatas(m_requestID);
 		DataCenter.GetMDService().PushLatestDatas(m_requestID, dataInfo);
 	}
@@ -550,8 +567,8 @@ public class QuoteService extends BaseService{
 	 */
 	public void SubMarketTickData(String codes) {
 		LatestDataInfo dataInfo = new LatestDataInfo();
- 		dataInfo.m_codes = codes;
- 		dataInfo.m_format = 0;
+		dataInfo.m_codes = codes;
+		dataInfo.m_format = 0;
 		DataCenter.GetMDService().StopPushLatestDepthDatas(m_requestID);
 		DataCenter.GetMDService().PushLatestDatas(m_requestID, dataInfo);
 	}
@@ -564,11 +581,11 @@ public class QuoteService extends BaseService{
 	 */
 	public void UnSubMarketDepthData(String codes) {
 		LatestDataInfo dataInfo = new LatestDataInfo();
- 		dataInfo.m_codes = codes;
- 		dataInfo.m_format = 1;
+		dataInfo.m_codes = codes;
+		dataInfo.m_format = 1;
 		DataCenter.GetMDService().StopPushLatestDepthDatas(m_requestID);
 	}
-	
+
 	/**
 	 * 取消订阅Tick数据
 	 * 
@@ -577,8 +594,8 @@ public class QuoteService extends BaseService{
 	 */
 	public void UnSubMarketTickData(String codes) {
 		LatestDataInfo dataInfo = new LatestDataInfo();
- 		dataInfo.m_codes = codes;
- 		dataInfo.m_format = 0;
+		dataInfo.m_codes = codes;
+		dataInfo.m_format = 0;
 		DataCenter.GetMDService().StopPushLatestDepthDatas(m_requestID);
 	}
 
