@@ -3,13 +3,22 @@ package com.gaia.autotrade.ws.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.gaia.autotrade.owsock.manager.MarketDataManager;
+import com.gaia.autotrade.ws.bean.SubDataBean;
 import com.gaia.autotrade.ws.bean.WebSocketServletRequest;
 import com.gaia.autotrade.ws.bean.WebSocketServletResponse;
+import com.gaia.autotrade.ws.global.PublicField;
 import com.gaia.autotrade.ws.manager.WebSocketServiceManager;
+import com.gaia.autotrade.ws.manager.WebSocketSubManager;
 
 @Component
 public class MarketTickService extends MarketBaseService {
 
+	// 行情数据管理器
+	private MarketDataManager m_mkDataManager = MarketDataManager.getInstance();
+	// 订阅管理器
+	private WebSocketSubManager m_subDataManager;
+	
 	// 设置服务Key
 	public MarketTickService() {
 		setServiceKey("tick");
@@ -23,7 +32,17 @@ public class MarketTickService extends MarketBaseService {
 
 	@Override
 	public int RevWsSub(WebSocketServletRequest request, WebSocketServletResponse response) {
-		System.out.println(this.getClass().getName() + "接收到订阅");
+		String pair = request.getParams().get("pair");
+		String sid = request.getParams().get("sid");
+		if(m_mkDataManager.isExistPair(pair)) {
+			response.setStatus(PublicField.FAIL_STATUS);
+			response.setMsg("Pair：" + pair+ ",不是一个合法的Pair");    //对子
+		}
+		SubDataBean bean = new SubDataBean();
+		bean.setPair(pair);
+		bean.setSid(sid);
+		bean.setTopic(request.getTopic());
+		m_subDataManager.putCallBackTick(bean);
 		return 0;
 	}
 
