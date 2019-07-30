@@ -1,7 +1,7 @@
 package com.gaia.autotrade.ws.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.gaia.autotrade.ws.bean.ResponseMsgInterfact;
+import com.gaia.autotrade.ws.bean.ResponseMsg;
 
 public abstract class WebSocketController {
 
@@ -16,6 +16,6 @@ public abstract class WebSocketController {
 		this.controllerKey = controllerKey;
 	}
 
-	public abstract ResponseMsgInterfact onReceive(JSONObject message);
+	public abstract ResponseMsg onReceive(JSONObject message);
 
 }

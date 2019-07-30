@@ -11,6 +11,7 @@ import com.gaia.autotrade.owsock.market_bean.MarketDepthData;
 import com.gaia.autotrade.owsock.market_bean.MarketTickData;
 import com.gaia.autotrade.owsock.market_bean.MarketUserInfo;
 import com.gaia.autotrade.owsock.market_bean.SecurityInfo;
+import com.gaia.autotrade.ws.manager.WebSocketMarketDataPusher;
 import com.gaia.autotrade.ws.manager.WebSocketSubManager;
 
 public class MarketDataManager {
@@ -19,6 +20,8 @@ public class MarketDataManager {
 	
 	// Ws订阅者管理器
 	private WebSocketSubManager m_subDataManager;
+	// Ws推送者管理器
+	private WebSocketMarketDataPusher m_pushDataManager;
 	// 行情登录用户信息
 	private MarketUserInfo m_userInfo = new MarketUserInfo();
 	// 缓存Depth行情数据
@@ -31,11 +34,8 @@ public class MarketDataManager {
 	private ConcurrentHashMap<String, String> m_tradePairMap = new ConcurrentHashMap<String, String>();
 	// 币种表
 	private ConcurrentHashMap<String, String> m_coinMap = new ConcurrentHashMap<String, String>();
+
 	
-	// 私有化构造函数
-	private MarketDataManager() {
-		WebSocketSubManager.addDepend(m_subDataManager);
-	}
 
 	// 获取自身
 	public static MarketDataManager getInstance() {
@@ -47,6 +47,16 @@ public class MarketDataManager {
 			}
 		}
 		return m_self;
+	}
+	
+	// 设置订阅者
+	public void setWebSocketSubManager(WebSocketSubManager webSocketSubManager) {
+		m_subDataManager = webSocketSubManager;
+	}
+	
+	// 设置推送者
+	public void setWebSocketMarketDataPusher(WebSocketMarketDataPusher pushDataManager) {
+		m_pushDataManager = pushDataManager;
 	}
 
 	// 获取行情用户数据
@@ -83,11 +93,12 @@ public class MarketDataManager {
 
 	/**
 	 * 添加或更新对应的交易对子的Depth Data
-	 * 
+	 * 同时通知推送者推送数据
 	 * @param data 最新的Depth Data
 	 */
 	public void putDepthData(MarketDepthData data) {
 		m_depthDataMap.put(data.m_code, data);
+		m_pushDataManager.addDepthPushPair(data.copy());
 	}
 
 	/**
@@ -172,8 +183,12 @@ public class MarketDataManager {
 	 */
 	public void putTradePairList(ArrayList<String> tradePairList) {
 		for (int i = 0; i < tradePairList.size(); i++) {
-			String tradePair = tradePairList.get(i);
-			m_tradePairMap.put(tradePair.toUpperCase(), tradePair.toUpperCase());
+			String value = tradePairList.get(i);
+			if(value == null){
+				continue;
+			}
+			String key = value.replace("/", "");
+			m_tradePairMap.put(key.toLowerCase(), value);
 		}
 	}
 	
@@ -199,6 +214,9 @@ public class MarketDataManager {
 	 * @return 存在返回true 不存在返回false
 	 */
 	public boolean isExistPair(String pair) {
+		if(pair == null) {
+			return false;
+		}
 		return m_tradePairMap.containsKey(pair);
 	}
 	

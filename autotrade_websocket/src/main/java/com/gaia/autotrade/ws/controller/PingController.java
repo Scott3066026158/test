@@ -4,8 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSONObject;
-import com.gaia.autotrade.ws.bean.ResponseMsgInterfact;
-import com.gaia.autotrade.ws.bean.ResponsePingMsg;
+import com.gaia.autotrade.ws.bean.ResponseMsg;
 import com.gaia.autotrade.ws.manager.WebSocketControllerManager;
 
 @Component
@@ -22,19 +21,19 @@ public class PingController extends WebSocketController {
 	}
 
 	@Override
-	public ResponseMsgInterfact onReceive(JSONObject message) {
+	public ResponseMsg onReceive(JSONObject message) {
 		long ts = System.currentTimeMillis();
 		try {
 			long ping = (long) message.get("ping");
-			ResponsePingMsg msg = new ResponsePingMsg();
+			ResponseMsg msg = new ResponseMsg();
 			msg.setPong(ping);
 			return msg;
 		} catch (ClassCastException e) {
-			ResponsePingMsg msg = new ResponsePingMsg();
+			ResponseMsg msg = new ResponseMsg();
 			msg.setPong(ts);
 			return msg;
 		} catch (Exception e) {
-			ResponsePingMsg msg = new ResponsePingMsg();
+			ResponseMsg msg = new ResponseMsg();
 			msg.setPong(ts);
 			return msg;
 		}

@@ -2,39 +2,26 @@ package com.gaia.autotrade.ws.manager;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.gaia.autotrade.owsock.manager.MarketDataManager;
+import com.gaia.autotrade.owsock.market_bean.MarketDepthData;
 import com.gaia.autotrade.ws.bean.SubDataBean;
 
 @Component
-public class WebSocketSubManager {
+public class WebSocketSubManager{
 	// 订阅的目标 Depth Tick KLine Other
 	// 订阅的交易对子 AE/BIC BTC/USDT
 	// 订阅者 SID
 	// 订阅推送的规则 即到即发 间隔发送
 
-	private static CopyOnWriteArrayList<WebSocketSubManager> m_dependList = new CopyOnWriteArrayList<WebSocketSubManager>();
-
-	/**
-	 * 添加依赖
-	 * 
-	 * @param 各个对象中此对象的引用
-	 */
-	public static void addDepend(WebSocketSubManager o) {
-		m_dependList.add(o);
-	}
-
-	/**
-	 * 对象被创建后为各个引用添加依赖
-	 */
 	public WebSocketSubManager() {
-		for (@SuppressWarnings("unused")
-		WebSocketSubManager reference : m_dependList) {
-			reference = this;
-		}
+		// 设置订阅者中的行情引用
+		m_marketDataManager.setWebSocketSubManager(this);
 	}
 
 	// Depth数据回调订阅者 (即到即发)
@@ -47,7 +34,18 @@ public class WebSocketSubManager {
 	// Tick数据回调订阅者 (间隔发送)
 	private ConcurrentHashMap<String, ConcurrentHashMap<String, SubDataBean>> m_tickDataIntervalSubMap = new ConcurrentHashMap<String, ConcurrentHashMap<String, SubDataBean>>();
 
-	// 获取深度订阅者集合
+	// 行情数据推送器
+	private WebSocketMarketDataPusher m_marketDataPusher;
+	// 行情数据管理器
+	private MarketDataManager m_marketDataManager = MarketDataManager.getInstance();
+	
+	@Autowired
+	public void setWebSocketMarketDataPusher(WebSocketMarketDataPusher marketDataPusher) {
+		m_marketDataPusher = marketDataPusher;
+	}
+	
+	
+	// 获取深度订阅者集合(深克隆)
 	public Map<String, SubDataBean> getAllCallBackDepth(String pair) {
 		if (m_depthDataCallBackSubMap.containsKey(pair)) {
 			ConcurrentHashMap<String, SubDataBean> result = new ConcurrentHashMap<String, SubDataBean>();
@@ -58,6 +56,18 @@ public class WebSocketSubManager {
 				SubDataBean newBean = entry.getValue().copy();
 				result.put(newBean.getSid(), newBean);
 			}
+			return result;
+		} else {
+			return null;
+		}
+	}
+	
+	// 获取深度订阅者集合(浅克隆)
+	public Map<String, SubDataBean> getAllCallBackDepthByNoCopy(String pair) {
+		if (m_depthDataCallBackSubMap.containsKey(pair)) {
+			ConcurrentHashMap<String, SubDataBean> result = new ConcurrentHashMap<String, SubDataBean>();
+			ConcurrentHashMap<String, SubDataBean> queue = m_depthDataCallBackSubMap.get(pair);
+			result.putAll(queue);
 			return result;
 		} else {
 			return null;
@@ -88,6 +98,10 @@ public class WebSocketSubManager {
 			map.put(bean.getSid(), bean);
 			m_depthDataCallBackSubMap.put(bean.getPair(), map);
 		}
+
+		//添加订阅的同时推送一笔最新数据
+		MarketDepthData data = m_marketDataManager.getDepthData(bean.getPair());
+		m_marketDataPusher.addDepthPushPair(data);
 		return true;
 	}
 
@@ -96,6 +110,17 @@ public class WebSocketSubManager {
 		if (m_depthDataCallBackSubMap.containsKey(pair)) {
 			ConcurrentHashMap<String, SubDataBean> queue = m_depthDataCallBackSubMap.get(pair);
 			queue.remove(sid);
+		}
+		return true;
+	}
+	
+	//根据sid删除订阅者
+	public boolean removeCallBackDepth(String sid) {
+		Iterator<Entry<String, ConcurrentHashMap<String, SubDataBean>>> iter = m_depthDataCallBackSubMap.entrySet().iterator();
+		while (iter.hasNext()) {
+			Entry<String, ConcurrentHashMap<String, SubDataBean>> entry = iter.next();
+			ConcurrentHashMap<String, SubDataBean> subMap = entry.getValue();
+			subMap.remove(sid);
 		}
 		return true;
 	}
@@ -152,5 +177,6 @@ public class WebSocketSubManager {
 		}
 		return true;
 	}
+
 
 }

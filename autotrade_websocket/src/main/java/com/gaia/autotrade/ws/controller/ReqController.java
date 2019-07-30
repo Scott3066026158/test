@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSONObject;
-import com.gaia.autotrade.ws.bean.ResponseErrorMsg;
 import com.gaia.autotrade.ws.bean.ResponseMsg;
-import com.gaia.autotrade.ws.bean.ResponseMsgInterfact;
 import com.gaia.autotrade.ws.bean.WebSocketServletRequest;
 import com.gaia.autotrade.ws.bean.WebSocketServletResponse;
 import com.gaia.autotrade.ws.global.PublicField;
@@ -41,7 +39,7 @@ public class ReqController extends WebSocketController {
 	}
 
 	@Override
-	public ResponseMsgInterfact onReceive(JSONObject msg) {
+	public ResponseMsg onReceive(JSONObject msg) {
 		String req = (String) msg.get("req");
 		try {
 			String id = (String) msg.get("id");
@@ -94,8 +92,8 @@ public class ReqController extends WebSocketController {
 	}
 
 	// 生成错误信息对象
-	private ResponseErrorMsg getResponseErrorMsg(String errMsg, String id) {
-		ResponseErrorMsg resp = new ResponseErrorMsg();
+	private ResponseMsg getResponseErrorMsg(String errMsg, String id) {
+		ResponseMsg resp = new ResponseMsg();
 		resp.setErrmsg("参数错误:" + errMsg);
 		resp.setTs(getServerTime());
 		resp.setStatus("error");
@@ -104,16 +102,16 @@ public class ReqController extends WebSocketController {
 	}
 
 	// 将WebSocketServletResponse对象转换成ResponseMsgInterfact
-	public ResponseMsgInterfact convertWebSocketServletResponse(WebSocketServletResponse response) {
+	public ResponseMsg convertWebSocketServletResponse(WebSocketServletResponse response) {
 		if (response.getStatus() == PublicField.SUCCESSFUL_STATUS) {
 			ResponseMsg msg = new ResponseMsg();
-			msg.setReqmsg(response.getRequestParms());
+			msg.setSubbed(response.getRequestParms());
 			msg.setTs(response.getTimestamp());
 			msg.setId(response.getParamID());
 			msg.setStatus(response.getStatus());
 			return msg;
 		} else {
-			ResponseErrorMsg msg = new ResponseErrorMsg();
+			ResponseMsg msg = new ResponseMsg();
 			msg.setId(response.getParamID());
 			msg.setStatus(response.getStatus());
 			msg.setErrmsg(response.getMsg());

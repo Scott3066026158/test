@@ -1,8 +1,7 @@
 package com.gaia.autotrade.ws.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.gaia.autotrade.ws.bean.ResponseErrorMsg;
-import com.gaia.autotrade.ws.bean.ResponseMsgInterfact;
+import com.gaia.autotrade.ws.bean.ResponseMsg;
 
 public class ErrorController {
 
@@ -25,8 +24,8 @@ public class ErrorController {
 		return m_errController;
 	}
 
-	public ResponseMsgInterfact onReceive(JSONObject msg, Exception e) {
-		ResponseErrorMsg resp = new ResponseErrorMsg();
+	public ResponseMsg onReceive(JSONObject msg, Exception e) {
+		ResponseMsg resp = new ResponseMsg();
 		resp.setErrmsg(e.getMessage());
 		resp.setTs(System.currentTimeMillis());
 		resp.setStatus("error");
@@ -41,8 +40,8 @@ public class ErrorController {
 		return resp;
 	}
 
-	public ResponseMsgInterfact onReceive(String msg, Exception e) {
-		ResponseErrorMsg resp = new ResponseErrorMsg();
+	public ResponseMsg onReceive(String msg, Exception e) {
+		ResponseMsg resp = new ResponseMsg();
 		resp.setErrmsg(e.getMessage());
 		resp.setTs(System.currentTimeMillis());
 		resp.setStatus("error");
@@ -50,8 +49,8 @@ public class ErrorController {
 		return resp;
 	}
 
-	public ResponseMsgInterfact onReceive(JSONObject msg, String errMsg) {
-		ResponseErrorMsg resp = new ResponseErrorMsg();
+	public ResponseMsg onReceive(JSONObject msg, String errMsg) {
+		ResponseMsg resp = new ResponseMsg();
 		resp.setErrmsg(errMsg);
 		resp.setTs(System.currentTimeMillis());
 		resp.setStatus("error");

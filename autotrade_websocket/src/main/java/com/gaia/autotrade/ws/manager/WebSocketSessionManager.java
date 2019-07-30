@@ -7,12 +7,12 @@ import org.springframework.stereotype.Component;
 import com.gaia.autotrade.ws.base.MarketWebSocket;
 
 @Component
-public class WebSocketSessionManager<V extends MarketWebSocket> {
+public class WebSocketSessionManager {
 
 	// 记录此对象生成次数
 	private static int m_createCount = 0;
 	// 管理的所有Session
-	private ConcurrentHashMap<String, V> m_sessionMap = new ConcurrentHashMap<String, V>();
+	private ConcurrentHashMap<String, MarketWebSocket> m_sessionMap = new ConcurrentHashMap<String, MarketWebSocket>();
 
 	public WebSocketSessionManager() {
 		m_createCount++;
@@ -28,8 +28,8 @@ public class WebSocketSessionManager<V extends MarketWebSocket> {
 	 * @param value 需要添加的WS的Session
 	 * @return 有就替换，没有添加
 	 */
-	public boolean addWebSocket(V value) {
-		V oldValue = m_sessionMap.put(value.getId(), value);
+	public boolean addWebSocket(MarketWebSocket value) {
+		MarketWebSocket oldValue = m_sessionMap.put(value.getId(), value);
 		if (oldValue == null)
 			return true;
 		return true;
@@ -55,7 +55,7 @@ public class WebSocketSessionManager<V extends MarketWebSocket> {
 	 * @param key SessionID
 	 * @return 获取成功返回Session，失败返回null
 	 */
-	public V getWebSocket(String key) {
+	public MarketWebSocket getWebSocket(String key) {
 		boolean flag = m_sessionMap.containsKey(key);
 		if (flag == false)
 			return null;

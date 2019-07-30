@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.gaia.autotrade.ws.bean.DepthPushTick;
+
 public class MarketDepthData {
 	//交易对子
 	public String m_code;
@@ -23,7 +25,6 @@ public class MarketDepthData {
 	//买档数量深度
 	public List<Double> m_bidVolumeList;
 	
-	
 	//卖档价格深度数量
 	public int m_askPriceCount;
 	//卖档数量深度数量   原则上价格与数量深度一致
@@ -32,6 +33,7 @@ public class MarketDepthData {
 	public List<Double> m_askPriceList;
 	//卖档数量深度
 	public List<Double> m_askVolumeList;
+
 	
 	//提取Depth数据中有效数据
 	public MarketDepthData coinNewDataToMarketDepthData(CoinNewData coinNewData)

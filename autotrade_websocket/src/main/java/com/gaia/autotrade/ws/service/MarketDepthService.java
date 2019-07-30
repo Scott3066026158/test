@@ -41,7 +41,6 @@ public class MarketDepthService extends MarketBaseService {
 	public int RevWsSub(WebSocketServletRequest request, WebSocketServletResponse response) {
 		Map<String, String> params = request.getParams();
 		String pair = params.get("pair");
-		String sid = params.get("sid");
 		String param = params.get("param");
 		if(!m_mkDataManager.isExistPair(pair)) {
 			response.setStatus(PublicField.FAIL_STATUS);
@@ -49,9 +48,11 @@ public class MarketDepthService extends MarketBaseService {
 		}
 		SubDataBean bean = new SubDataBean();
 		bean.setPair(pair);
-		bean.setSid(sid);
+		bean.setSid(request.getSid());
 		bean.setTopic(request.getTopic());
 		m_subDataManager.putCallBackDepth(bean);
+		response.setStatus(PublicField.SUCCESSFUL_STATUS);
+		response.setRequestParms(request.getTopic());
 		return 0;
 	}
 

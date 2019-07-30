@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSONObject;
-import com.gaia.autotrade.ws.bean.ResponseErrorMsg;
 import com.gaia.autotrade.ws.bean.ResponseMsg;
-import com.gaia.autotrade.ws.bean.ResponseMsgInterfact;
 import com.gaia.autotrade.ws.bean.WebSocketServletRequest;
 import com.gaia.autotrade.ws.bean.WebSocketServletResponse;
 import com.gaia.autotrade.ws.global.PublicField;
@@ -41,11 +39,11 @@ public class SubController extends WebSocketController {
 	}
 
 	@Override
-	public ResponseMsgInterfact onReceive(JSONObject msg) {
+	public ResponseMsg onReceive(JSONObject msg) {
 		String sub = (String) msg.get("sub");
 		try {
 			String id = (String) msg.get("id");
-			List<String> list = Arrays.asList(sub.split("."));
+			List<String> list = Arrays.asList(sub.split("[.]"));
 			if (list.size() < 3) {
 				return getResponseErrorMsg("参数错误:" + sub, id);
 			}
@@ -75,7 +73,6 @@ public class SubController extends WebSocketController {
 			response.setTimestamp(System.currentTimeMillis());
 			response.setParamID(id);
 			response.setRequestParms(sub);
-			response.setMsg("此订阅未处理");
 			response.setSid(msg.getString("sid"));
 			service.RevWsSub(request, response);
 
@@ -89,29 +86,31 @@ public class SubController extends WebSocketController {
 	}
 
 	// 生成错误信息对象
-	private ResponseErrorMsg getResponseErrorMsg(String errMsg, String id) {
-		ResponseErrorMsg resp = new ResponseErrorMsg();
-		resp.setErrmsg("参数错误:" + errMsg);
+	private ResponseMsg getResponseErrorMsg(String errMsg, String id) {
+		ResponseMsg resp = new ResponseMsg();
+		resp.setErrmsg(errMsg);
+		resp.setErrcode("bad-request");
 		resp.setTs(System.currentTimeMillis());
-		resp.setStatus("error");
+		resp.setStatus(PublicField.FAIL_STATUS);
 		resp.setId(id);
 		return resp;
 	}
 
 	// 将WebSocketServletResponse对象转换成ResponseMsgInterfact
-	public ResponseMsgInterfact convertWebSocketServletResponse(WebSocketServletResponse response) {
+	public ResponseMsg convertWebSocketServletResponse(WebSocketServletResponse response) {
 		if (response.getStatus() == PublicField.SUCCESSFUL_STATUS) {
 			ResponseMsg msg = new ResponseMsg();
-			msg.setReqmsg(response.getRequestParms());
+			msg.setSubbed(response.getRequestParms());
 			msg.setTs(response.getTimestamp());
 			msg.setId(response.getParamID());
 			msg.setStatus(response.getStatus());
 			return msg;
 		} else {
-			ResponseErrorMsg msg = new ResponseErrorMsg();
+			ResponseMsg msg = new ResponseMsg();
 			msg.setId(response.getParamID());
 			msg.setStatus(response.getStatus());
 			msg.setErrmsg(response.getMsg());
+			msg.setErrcode("bad-request");
 			msg.setTs(response.getTimestamp());
 			return msg;
 		}
