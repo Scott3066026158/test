@@ -43,6 +43,8 @@ public class MarketTickService extends MarketBaseService {
 		bean.setSid(sid);
 		bean.setTopic(request.getTopic());
 		m_subDataManager.putCallBackTick(bean);
+		response.setStatus(PublicField.SUCCESSFUL_STATUS);
+		response.setRequestParms(request.getTopic());
 		return 0;
 	}
 

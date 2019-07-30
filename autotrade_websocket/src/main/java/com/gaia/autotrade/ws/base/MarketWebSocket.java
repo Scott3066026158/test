@@ -52,6 +52,11 @@ public class MarketWebSocket {
 	public void setWebSocketControllerManager(WebSocketControllerManager wsConManager) {
 		MarketWebSocket.m_wsConManager = wsConManager;
 	}
+	
+	@Autowired
+	public void setWebSocketSubManager(WebSocketSubManager subDataManager) {
+		MarketWebSocket.m_subDataManager = subDataManager;
+	}
 
 	@OnOpen
 	public void onOpen(Session session) {
@@ -116,6 +121,7 @@ public class MarketWebSocket {
 		try {
 			String text = JSON.toJSONString(msg);
 			m_session.getBasicRemote().sendText(text);
+			
 			return text;
 		} catch (IOException e) {
 			log.error("Message发送失败!");

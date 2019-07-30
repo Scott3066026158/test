@@ -97,7 +97,7 @@ public class MarketDataManager {
 	 * @param data 最新的Depth Data
 	 */
 	public void putDepthData(MarketDepthData data) {
-		m_depthDataMap.put(data.m_code, data);
+		m_depthDataMap.put(data.m_lowCode, data);
 		m_pushDataManager.addDepthPushPair(data.copy());
 	}
 
@@ -134,7 +134,7 @@ public class MarketDataManager {
 	 * @param data 最新的Tick数据
 	 */
 	public void putTickData(MarketTickData data) {
-		m_tickDataMap.put(data.m_code, data);
+		m_tickDataMap.put(data.m_lowCode, data);
 	}
 
 	/**

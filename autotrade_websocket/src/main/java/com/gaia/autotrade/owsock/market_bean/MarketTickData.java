@@ -14,6 +14,8 @@ public class MarketTickData {
 	public String m_exchName;
 	//交易对子
 	public String m_code;
+	//交易对子缩写
+	public String m_lowCode;
 	//类型     116标识成交数据   117标识深度数据
 	public int m_type;
 	//最新价格
@@ -45,6 +47,7 @@ public class MarketTickData {
 		
 		this.m_exchName = coinNewData.m_exchangeID;
 		this.m_code = coinNewData.m_code;
+		this.m_lowCode = coinNewData.m_code.replace("/", "").toLowerCase();
 		this.m_type = coinNewData.m_type;
 		this.m_close = coinNewData.m_close;
 		this.m_preClose = coinNewData.m_preClose;
@@ -63,6 +66,7 @@ public class MarketTickData {
 		
 		this.m_exchName = new String(data.m_exchName);
 		this.m_code = new String(data.m_code);
+		this.m_lowCode = new String(data.m_lowCode);
 		this.m_type = data.m_type;
 		this.m_close = data.m_close;
 		this.m_preClose = data.m_preClose;
@@ -82,6 +86,7 @@ public class MarketTickData {
 		
 		data.m_exchName = new String(this.m_exchName);
 		data.m_code = new String(this.m_code);
+		data.m_lowCode = new String(this.m_lowCode);
 		data.m_type = this.m_type;
 		data.m_close = this.m_close;
 		data.m_preClose = this.m_preClose;

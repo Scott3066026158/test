@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.gaia.autotrade.owsock.manager.MarketDataManager;
 import com.gaia.autotrade.owsock.market_bean.MarketDepthData;
+import com.gaia.autotrade.owsock.market_bean.MarketTickData;
 import com.gaia.autotrade.ws.bean.SubDataBean;
 
 @Component
@@ -166,6 +167,9 @@ public class WebSocketSubManager{
 			map.put(bean.getSid(), bean);
 			m_tickDataCallBackSubMap.put(bean.getPair(), map);
 		}
+		//添加订阅的同时推送一笔最新数据
+		MarketTickData data = m_marketDataManager.getTickData(bean.getPair());
+		//m_marketDataPusher.addTickPushPair(bean.getPair());
 		return true;
 	}
 

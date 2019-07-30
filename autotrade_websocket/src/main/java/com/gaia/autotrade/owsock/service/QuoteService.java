@@ -160,6 +160,8 @@ public class QuoteService extends BaseService {
 		MarketDepthData depthData = new MarketDepthData();
 		depthData.coinNewDataToMarketDepthData(data);
 		m_marketDataManager.putDepthData(depthData);
+		if(depthData.m_lowCode.equals("btcusdt")) {
+		}
 	}
 
 	private void RevLogin(Binary binary) {

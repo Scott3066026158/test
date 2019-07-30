@@ -2,13 +2,14 @@ package com.gaia.autotrade.owsock.market_bean;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-
-import com.gaia.autotrade.ws.bean.DepthPushTick;
 
 public class MarketDepthData {
 	//交易对子
 	public String m_code;
+	//交易对子缩写
+	public String m_lowCode;
 	//类型     116标识成交数据   117标识深度数据   
 	public int m_type;
 	//日期
@@ -39,6 +40,7 @@ public class MarketDepthData {
 	public MarketDepthData coinNewDataToMarketDepthData(CoinNewData coinNewData)
 	{
 		this.m_code = coinNewData.m_code;
+		this.m_lowCode = coinNewData.m_code.replace("/", "").toLowerCase();
 		this.m_type = coinNewData.m_type;
 		this.m_date = coinNewData.m_date;
 		this.m_exchName = coinNewData.m_exchangeID;
@@ -58,6 +60,7 @@ public class MarketDepthData {
 	public MarketDepthData copy(MarketDepthData data)
 	{
 		this.m_code = new String(data.m_code);
+		this.m_lowCode = new String(data.m_lowCode);
 		this.m_type = data.m_type;
 		this.m_date = data.m_date;
 		this.m_exchName = new String(data.m_exchName);
@@ -78,8 +81,8 @@ public class MarketDepthData {
 	public MarketDepthData copy()
 	{
 		MarketDepthData data = new MarketDepthData();
-		
 		data.m_code = new String(this.m_code);
+		data.m_lowCode = new String(this.m_lowCode);
 		data.m_type = this.m_type;
 		data.m_date = this.m_date;
 		data.m_exchName = new String(this.m_exchName);
@@ -87,13 +90,15 @@ public class MarketDepthData {
 		data.m_bidPriceCount = this.m_bidPriceCount;
 		data.m_bidVolumeCount = this.m_bidVolumeCount;
 		data.m_bidPriceList = new ArrayList<Double>(Arrays.asList(new Double[this.m_bidPriceList.size()]));
+		Collections.copy(data.m_bidPriceList, this.m_bidPriceList);
 		data.m_bidVolumeList = new ArrayList<Double>(Arrays.asList(new Double[this.m_bidVolumeList.size()]));
-		
+		Collections.copy(data.m_bidVolumeList, this.m_bidVolumeList);
 		data.m_askPriceCount = this.m_bidPriceCount;
 		data.m_askVolumeCount = this.m_askVolumeCount;
 		data.m_askPriceList = new ArrayList<Double>(Arrays.asList(new Double[this.m_askPriceList.size()]));
+		Collections.copy(data.m_askPriceList, this.m_askPriceList);
 		data.m_askVolumeList = new ArrayList<Double>(Arrays.asList(new Double[this.m_askVolumeList.size()]));
-		
+		Collections.copy(data.m_askVolumeList, this.m_askVolumeList);
 		return data;
 	}
 	

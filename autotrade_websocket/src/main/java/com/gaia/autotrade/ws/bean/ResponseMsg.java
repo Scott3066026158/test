@@ -3,8 +3,8 @@ package com.gaia.autotrade.ws.bean;
 import com.alibaba.fastjson.annotation.JSONField;
 
 public class ResponseMsg{
-	private long ts;
-	private long pong;
+	private Long ts;
+	private Long pong;
 	private String id;
 	private String status;
 	private String subbed;
@@ -13,12 +13,12 @@ public class ResponseMsg{
 	private String ch;
 	private DepthPushTick tick;
 	
-	public long getTs() {
+	public Long getTs() {
 		return ts;
 	}
 	
 	@JSONField(name="ts")
-	public void setTs(long ts) {
+	public void setTs(Long ts) {
 		this.ts = ts;
 	}
 
@@ -67,12 +67,12 @@ public class ResponseMsg{
 		this.errmsg = errmsg;
 	}
 	
-	public long getPong() {
+	public Long getPong() {
 		return pong;
 	}
 
 	@JSONField(name="pong")
-	public void setPong(long pong) {
+	public void setPong(Long pong) {
 		this.pong = pong;
 	}
 
