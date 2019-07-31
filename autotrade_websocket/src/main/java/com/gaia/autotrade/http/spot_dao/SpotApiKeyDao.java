@@ -10,21 +10,21 @@ import com.gaia.autotrade.arithmetic.AccessKeyGenerator;
 
 @Repository
 public class SpotApiKeyDao {
-	
+
 	@Autowired
-	private RedisTemplate<String,String> redisTemplate;
-	
+	private RedisTemplate<String, String> redisTemplate;
+
 	public String createApiKey(String username, String remark, String privilege, String ipgroup) {
-		//生成accesskey
+		// 生成accesskey
 		Map<String, String> map = AccessKeyGenerator.getKeyPair();
-		//redisTemplate.opsForValue().set("ApiKey", "bpf");
+		// redisTemplate.opsForValue().set("ApiKey", "bpf");
 		return null;
 	}
-	
+
 	public String getApiKeyList(String access_key) {
 		return null;
 	}
-	
+
 	public String deleteApiKey(String access_key) {
 		return null;
 	}

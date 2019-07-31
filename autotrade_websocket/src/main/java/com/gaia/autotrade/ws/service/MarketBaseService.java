@@ -34,10 +34,11 @@ public abstract class MarketBaseService {
 	 * @return 根据返回值确定处理结果
 	 */
 	public abstract int RevWsReq(WebSocketServletRequest request, WebSocketServletResponse response);
-	
+
 	/**
 	 * Req服务未提供默认方法
-	 * @param request 请求参数
+	 * 
+	 * @param request  请求参数
 	 * @param response 返回参数
 	 */
 	public void revNoProvideReq(WebSocketServletRequest request, WebSocketServletResponse response) {
@@ -48,10 +49,11 @@ public abstract class MarketBaseService {
 		response.setTimestamp(System.currentTimeMillis());
 		response.setRequestParms(request.getTopic());
 	}
-	
+
 	/**
 	 * Sub服务未提供默认方法
-	 * @param request 请求参数
+	 * 
+	 * @param request  请求参数
 	 * @param response 返回参数
 	 */
 	public void revNoProvideSub(WebSocketServletRequest request, WebSocketServletResponse response) {

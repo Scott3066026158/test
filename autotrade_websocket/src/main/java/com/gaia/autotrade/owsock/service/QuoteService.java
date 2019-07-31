@@ -41,14 +41,13 @@ public class QuoteService extends BaseService {
 	public static final int UNSUBSCRIBEID = 39;
 	public static final int SERVICEID_MD = 0;
 
-
 	public QuoteService() {
 		super("MDService");
 		SetSocketID(-1);
 		SetCompressType(BaseService.COMPRESSTYPE_NONE);
 		SetServiceID(SERVICEID_MD);
 	}
-	
+
 	// 连接行情服务
 	public int ConnectServer(String url) {
 		int socketID = ConnectToServer(url);
@@ -59,7 +58,8 @@ public class QuoteService extends BaseService {
 			ReqSecurityInfo();
 			ReqPairs();
 			SubKLineData info = new SubKLineData();
-			info.m_cycle = 1;info.m_size = 1;
+			info.m_cycle = 1;
+			info.m_size = 1;
 			info.m_code = "SEED/BIC";
 			GetHistoryDatas(m_requestID, info);
 			m_connected = true;
@@ -131,7 +131,7 @@ public class QuoteService extends BaseService {
 				// Depth Market Data
 				if (data.m_type == 117) {
 					RevDepthData(data);
-				// Tick Market Data
+					// Tick Market Data
 				} else if (data.m_type == 116) {
 					RevTickData(data);
 				} else {
@@ -332,18 +332,13 @@ public class QuoteService extends BaseService {
 		return ret;
 	}
 
-	
 	/**
 	 * 获取历史数据
 	 * 
-	 * @param dataInfo
-	 *            数据信息
-	 * @param datas
-	 *            历史数据列表
-	 * @param body
-	 *            数据
-	 * @param bodyLength
-	 *            包体长度
+	 * @param dataInfo   数据信息
+	 * @param datas      历史数据列表
+	 * @param body       数据
+	 * @param bodyLength 包体长度
 	 * @return 状态
 	 */
 	public static int GetHistoryDatas(SubKLineData dataInfo, ArrayList<MarketKLineData> datas, Binary binary) {
@@ -377,6 +372,7 @@ public class QuoteService extends BaseService {
 		}
 		return 1;
 	}
+
 	/**
 	 * 获取最新数据
 	 * 

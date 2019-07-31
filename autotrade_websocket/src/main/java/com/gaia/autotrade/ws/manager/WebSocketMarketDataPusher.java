@@ -39,7 +39,6 @@ public class WebSocketMarketDataPusher {
 	// Ws会话管理器
 	protected WebSocketSessionManager m_wsSenManager;
 
-
 	// 推送深度数据
 	public synchronized void addDepthPushPair(MarketDepthData pushDepthData) {
 		m_depthPushList.add(pushDepthData);
@@ -105,13 +104,14 @@ class DepthPushThread extends Thread {
 			try {
 				// 获取推送的深度数据
 				List<MarketDepthData> depthDataList = pusher.getDepthPushPair();
-				if(depthDataList.size() == 0) {
+				if (depthDataList.size() == 0) {
 					Thread.sleep(1000);
 					continue;
 				}
 				for (MarketDepthData data : depthDataList) {
-					Map<String, SubDataBean> subMap = pusher.m_subDataManager.getAllCallBackDepthByNoCopy(data.m_lowCode);
-					if(subMap == null){
+					Map<String, SubDataBean> subMap = pusher.m_subDataManager
+							.getAllCallBackDepthByNoCopy(data.m_lowCode);
+					if (subMap == null) {
 						System.out.println("交易对子:" + data.m_code + "暂时无人订阅Depth数据!");
 						continue;
 					}
@@ -124,7 +124,7 @@ class DepthPushThread extends Thread {
 						String result = sen.sendMsg(msg);
 						if (result == null) {
 							System.out.println(WebSocketMarketDataPusher.class.getName() + "Depth数据推送失败");
-						}else {
+						} else {
 							System.out.println("Depth数据推送成功:" + result);
 						}
 					}
@@ -133,7 +133,7 @@ class DepthPushThread extends Thread {
 				e.printStackTrace();
 				continue;
 			}
-			
+
 		}
 	}
 
@@ -186,7 +186,7 @@ class TickPushThread extends Thread {
 
 	// 推送次数
 	private long pushCount;
-	
+
 	public TickPushThread(WebSocketMarketDataPusher pusher) {
 		this.pusher = pusher;
 	}
@@ -197,13 +197,13 @@ class TickPushThread extends Thread {
 			try {
 				// 获取推送的深度数据
 				List<MarketTickDetailData> depthTickList = pusher.getTickPushPair();
-				if(depthTickList.size() == 0) {
+				if (depthTickList.size() == 0) {
 					Thread.sleep(1000);
 					continue;
 				}
 				for (MarketTickDetailData data : depthTickList) {
 					Map<String, SubDataBean> subMap = pusher.m_subDataManager.getAllCallBackDepthByNoCopy(data.m_code);
-					if(subMap == null){
+					if (subMap == null) {
 						System.out.println("交易对子:" + data.m_code + "暂时无人订阅Tick数据!");
 						continue;
 					}
@@ -225,21 +225,20 @@ class TickPushThread extends Thread {
 			}
 		}
 	}
-	
+
 	// 此方法需要优化，对于每一笔行情，此对象只需要一个
-		public ResponseMsg generateResponseMsg(MarketTickDetailData data, SubDataBean bean) {
-			long timestamp = System.currentTimeMillis();
-			long timesecond = timestamp / 1000;
+	public ResponseMsg generateResponseMsg(MarketTickDetailData data, SubDataBean bean) {
+		long timestamp = System.currentTimeMillis();
+		long timesecond = timestamp / 1000;
 
-			TickPushTick tick = new TickPushTick();
-			tick.setId(timesecond);
-			tick.setMrid(pushCount++);
+		TickPushTick tick = new TickPushTick();
+		tick.setId(timesecond);
+		tick.setMrid(pushCount++);
 
-			ResponseMsg msg = new ResponseMsg();
-			msg.setCh(bean.getTopic());
-			msg.setTs(timestamp);
-			return msg;
-		}
-
+		ResponseMsg msg = new ResponseMsg();
+		msg.setCh(bean.getTopic());
+		msg.setTs(timestamp);
+		return msg;
+	}
 
 }

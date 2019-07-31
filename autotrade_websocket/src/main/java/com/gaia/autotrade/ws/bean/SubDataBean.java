@@ -23,7 +23,7 @@ public class SubDataBean {
 	public void setTopic(String topic) {
 		this.m_topic = topic;
 	}
-	
+
 	public String getPair() {
 		return m_pair;
 	}
@@ -32,7 +32,7 @@ public class SubDataBean {
 		this.m_pair = pair;
 	}
 
-	//复制
+	// 复制
 	public SubDataBean copy() {
 		SubDataBean newBean = new SubDataBean();
 		newBean.setPair(new String(this.m_pair));

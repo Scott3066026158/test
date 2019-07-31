@@ -19,7 +19,7 @@ import com.gaia.autotrade.ws.manager.WebSocketSubManager;
 public class MarketDataManager {
 
 	private static MarketDataManager m_self = null;
-	
+
 	// Ws订阅者管理器
 	private WebSocketSubManager m_subDataManager;
 	// Ws推送者管理器
@@ -38,7 +38,6 @@ public class MarketDataManager {
 	private ConcurrentHashMap<String, String> m_tradePairMap = new ConcurrentHashMap<String, String>();
 	// 币种表
 	private ConcurrentHashMap<String, String> m_coinMap = new ConcurrentHashMap<String, String>();
-	
 
 	// 获取自身
 	public static MarketDataManager getInstance() {
@@ -51,12 +50,12 @@ public class MarketDataManager {
 		}
 		return m_self;
 	}
-	
+
 	// 设置订阅者
 	public void setWebSocketSubManager(WebSocketSubManager webSocketSubManager) {
 		m_subDataManager = webSocketSubManager;
 	}
-	
+
 	// 设置推送者
 	public void setWebSocketMarketDataPusher(WebSocketMarketDataPusher pushDataManager) {
 		m_pushDataManager = pushDataManager;
@@ -95,8 +94,8 @@ public class MarketDataManager {
 	}
 
 	/**
-	 * 添加或更新对应的交易对子的Depth Data
-	 * 同时通知推送者推送数据
+	 * 添加或更新对应的交易对子的Depth Data 同时通知推送者推送数据
+	 * 
 	 * @param data 最新的Depth Data
 	 */
 	public void putDepthData(MarketDepthData data) {
@@ -141,7 +140,7 @@ public class MarketDataManager {
 		String key = subData.m_code + subData.m_cycle;
 		m_klineDataMap.put(key, data);
 	}
-	
+
 	/**
 	 * 获取指定交易对子KLine Data
 	 * 
@@ -177,7 +176,6 @@ public class MarketDataManager {
 	public void putTickData(MarketTickDetailData data) {
 		m_tickDataMap.put(data.m_lowCode, data);
 	}
-
 
 	/**
 	 * 填充所有所有合约的信息，在行情启动的时候接收
@@ -226,20 +224,20 @@ public class MarketDataManager {
 	public void putTradePairList(ArrayList<String> tradePairList) {
 		for (int i = 0; i < tradePairList.size(); i++) {
 			String value = tradePairList.get(i);
-			if(value == null){
+			if (value == null) {
 				continue;
 			}
 			String key = value.replace("/", "");
 			m_tradePairMap.put(key.toLowerCase(), value);
 		}
 	}
-	
+
 	/**
 	 * 获取所有的交易对子
 	 * 
 	 * @return 返回交易对子List
 	 */
-	public List<String> getTradePairList(){
+	public List<String> getTradePairList() {
 		ArrayList<String> result = new ArrayList<String>();
 		Iterator<Entry<String, String>> iter = m_tradePairMap.entrySet().iterator();
 		while (iter.hasNext()) {
@@ -249,21 +247,23 @@ public class MarketDataManager {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * 检测交易对子是否存在
+	 * 
 	 * @param pair交易对子
 	 * @return 存在返回true 不存在返回false
 	 */
 	public boolean isExistPair(String pair) {
-		if(pair == null) {
+		if (pair == null) {
 			return false;
 		}
 		return m_tradePairMap.containsKey(pair);
 	}
-	
+
 	/**
 	 * put coinCode
+	 * 
 	 * @param coinCode 币种
 	 * @return true
 	 */
@@ -271,9 +271,10 @@ public class MarketDataManager {
 		m_coinMap.put(coinCode, coinCode);
 		return true;
 	}
-	
+
 	/**
 	 * 获取所有币种列表
+	 * 
 	 * @return 币种列表
 	 */
 	public List<String> getCoinCodeList() {

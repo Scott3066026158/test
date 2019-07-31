@@ -55,7 +55,7 @@ public class WebSocketServletResponse {
 	public void setTimestamp(long timestamp) {
 		this.m_timestamp = timestamp;
 	}
-	
+
 	public String getSid() {
 		return m_sid;
 	}

@@ -1,7 +1,5 @@
 package com.gaia.autotrade.owsock.listener;
 
-
-public interface TradeRecordListener
-{
-    void OnTradeRecordsCallBack();
+public interface TradeRecordListener {
+	void OnTradeRecordsCallBack();
 }

@@ -9,10 +9,10 @@ import org.springframework.util.ResourceUtils;
 import com.alibaba.fastjson.JSONObject;
 
 public class Applicaton {
-	
-	//SpringContext对象
+
+	// SpringContext对象
 	private static ConfigurableApplicationContext m_context;
-	//errorCode配置文件
+	// errorCode配置文件
 	private static JSONObject m_errCodeMap = getErrorCode();
 
 	public static ConfigurableApplicationContext getContext() {
@@ -22,21 +22,21 @@ public class Applicaton {
 	public static void setContext(ConfigurableApplicationContext context) {
 		Applicaton.m_context = context;
 	}
-	
+
 	public static JSONObject getErrorCode() {
-		if(m_errCodeMap == null) {
+		if (m_errCodeMap == null) {
 			try {
 				File jsonFile = ResourceUtils.getFile("classpath:errcode.json");
 				String json = FileUtils.readFileToString(jsonFile);
 				m_errCodeMap = JSONObject.parseObject(json);
-		        return m_errCodeMap;
+				return m_errCodeMap;
 			} catch (Exception e) {
 				System.out.println("配置文件解析出错!");
 				return null;
 			}
-		}else {
+		} else {
 			return m_errCodeMap;
 		}
 	}
-	
+
 }

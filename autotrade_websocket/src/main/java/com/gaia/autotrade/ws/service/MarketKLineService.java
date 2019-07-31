@@ -24,7 +24,7 @@ public class MarketKLineService extends MarketBaseService {
 
 	// 行情数据管理器
 	private MarketDataManager m_mkDataManager = MarketDataManager.getInstance();
-	
+
 	// 订阅管理器
 	private WebSocketSubManager m_subDataManager;
 
@@ -38,7 +38,7 @@ public class MarketKLineService extends MarketBaseService {
 	private void setWebSocketServiceManager(WebSocketServiceManager wsSerManager) {
 		wsSerManager.addService(this);
 	}
-	
+
 	@Autowired
 	private void setWebSocketSubManager(WebSocketSubManager subDataManager) {
 		m_subDataManager = subDataManager;
@@ -49,7 +49,7 @@ public class MarketKLineService extends MarketBaseService {
 		Map<String, String> params = request.getParams();
 		String pair = params.get("pair");
 		String param = params.get("param");
-		if(!m_mkDataManager.isExistPair(pair)) {
+		if (!m_mkDataManager.isExistPair(pair)) {
 			response.setStatus(PublicField.FAIL_STATUS);
 			response.setMsg("Pair：" + pair + ",不是一个合法的Pair");
 		}

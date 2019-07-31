@@ -18,18 +18,19 @@ import com.gaia.autotrade.owsock.market_bean.SecurityInfo;
 
 /**
  * Base信息控制器
+ * 
  * @author GAIA
  *
  */
 @RestController
-public class SpotBaseInfoController{
-	
-	//行情数据管理器
+public class SpotBaseInfoController {
+
+	// 行情数据管理器
 	private MarketDataManager m_marketDataManager = MarketDataManager.getInstance();
-	
-	//配置文件
+
+	// 配置文件
 	private JSONObject m_errCode = Applicaton.getErrorCode();
-	
+
 	// 获取所有交易对
 	@RequestMapping(value = "/v1/common/symbols", method = RequestMethod.GET)
 	public String getAllSymbol() {
@@ -65,7 +66,6 @@ public class SpotBaseInfoController{
 		return JSON.toJSONString(jsonMsg);
 	}
 
-	
 	// 获取当前系统时间
 	@RequestMapping(value = "/v1/common/timestamp", method = RequestMethod.GET)
 	public String getTimeStamp() {
@@ -74,7 +74,6 @@ public class SpotBaseInfoController{
 		return JSON.toJSONString(jsonMsg);
 	}
 
-	
 	// 获取用户当前手续费率
 	@RequestMapping(value = "/v1/fee/fee-rate/get", method = RequestMethod.GET)
 	public String getUserRate() {
@@ -82,7 +81,7 @@ public class SpotBaseInfoController{
 		jsonMsg.setErrCode("701");
 		jsonMsg.setTs(System.currentTimeMillis());
 		jsonMsg.setStatus("error");
-		jsonMsg.setErrMsg((String)m_errCode.get("701"));
+		jsonMsg.setErrMsg((String) m_errCode.get("701"));
 		return JSON.toJSONString(jsonMsg);
 	}
 }

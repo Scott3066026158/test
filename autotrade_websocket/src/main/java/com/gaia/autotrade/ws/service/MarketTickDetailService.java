@@ -18,7 +18,7 @@ public class MarketTickDetailService extends MarketBaseService {
 	private MarketDataManager m_mkDataManager = MarketDataManager.getInstance();
 	// 订阅管理器
 	private WebSocketSubManager m_subDataManager;
-	
+
 	// 设置服务Key
 	public MarketTickDetailService() {
 		setServiceKey("detail");
@@ -34,9 +34,9 @@ public class MarketTickDetailService extends MarketBaseService {
 	public int RevWsSub(WebSocketServletRequest request, WebSocketServletResponse response) {
 		String pair = request.getParams().get("pair");
 		String sid = request.getParams().get("sid");
-		if(m_mkDataManager.isExistPair(pair)) {
+		if (m_mkDataManager.isExistPair(pair)) {
 			response.setStatus(PublicField.FAIL_STATUS);
-			response.setMsg("Pair：" + pair+ ",不是一个合法的Pair");    //对子
+			response.setMsg("Pair：" + pair + ",不是一个合法的Pair"); // 对子
 		}
 		SubDataBean bean = new SubDataBean();
 		bean.setPair(pair);

@@ -20,7 +20,7 @@ public class MarketDepthService extends MarketBaseService {
 	private MarketDataManager m_mkDataManager = MarketDataManager.getInstance();
 	// 订阅管理器
 	private WebSocketSubManager m_subDataManager;
-	
+
 	// 设置服务Key
 	public MarketDepthService() {
 		setServiceKey("depth");
@@ -31,7 +31,7 @@ public class MarketDepthService extends MarketBaseService {
 	private void setWebSocketServiceManager(WebSocketServiceManager wsSerManager) {
 		wsSerManager.addService(this);
 	}
-	
+
 	@Autowired
 	private void setWebSocketSubManager(WebSocketSubManager subDataManager) {
 		m_subDataManager = subDataManager;
@@ -42,7 +42,7 @@ public class MarketDepthService extends MarketBaseService {
 		Map<String, String> params = request.getParams();
 		String pair = params.get("pair");
 		String param = params.get("param");
-		if(!m_mkDataManager.isExistPair(pair)) {
+		if (!m_mkDataManager.isExistPair(pair)) {
 			response.setStatus(PublicField.FAIL_STATUS);
 			response.setMsg("Pair：" + pair + ",不是一个合法的Pair");
 		}

@@ -2,7 +2,7 @@ package com.gaia.autotrade.ws.bean;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
-public class ResponseMsg{
+public class ResponseMsg {
 	private Long ts;
 	private Long pong;
 	private String id;
@@ -12,12 +12,12 @@ public class ResponseMsg{
 	private String errmsg;
 	private String ch;
 	private DepthPushTick tick;
-	
+
 	public Long getTs() {
 		return ts;
 	}
-	
-	@JSONField(name="ts")
+
+	@JSONField(name = "ts")
 	public void setTs(Long ts) {
 		this.ts = ts;
 	}
@@ -26,7 +26,7 @@ public class ResponseMsg{
 		return id;
 	}
 
-	@JSONField(name="id")
+	@JSONField(name = "id")
 	public void setId(String id) {
 		this.id = id;
 	}
@@ -35,7 +35,7 @@ public class ResponseMsg{
 		return status;
 	}
 
-	@JSONField(name="status")
+	@JSONField(name = "status")
 	public void setStatus(String status) {
 		this.status = status;
 	}
@@ -43,8 +43,8 @@ public class ResponseMsg{
 	public String getSubbed() {
 		return subbed;
 	}
-	
-	@JSONField(name="subbed")
+
+	@JSONField(name = "subbed")
 	public void setSubbed(String subbed) {
 		this.subbed = subbed;
 	}
@@ -53,7 +53,7 @@ public class ResponseMsg{
 		return errcode;
 	}
 
-	@JSONField(name="err-code")
+	@JSONField(name = "err-code")
 	public void setErrcode(String errcode) {
 		this.errcode = errcode;
 	}
@@ -62,16 +62,16 @@ public class ResponseMsg{
 		return errmsg;
 	}
 
-	@JSONField(name="err-msg")
+	@JSONField(name = "err-msg")
 	public void setErrmsg(String errmsg) {
 		this.errmsg = errmsg;
 	}
-	
+
 	public Long getPong() {
 		return pong;
 	}
 
-	@JSONField(name="pong")
+	@JSONField(name = "pong")
 	public void setPong(Long pong) {
 		this.pong = pong;
 	}
@@ -79,7 +79,7 @@ public class ResponseMsg{
 	public String getCh() {
 		return ch;
 	}
-	
+
 	@JSONField(name = "ch")
 	public void setCh(String ch) {
 		this.ch = ch;
@@ -93,6 +93,5 @@ public class ResponseMsg{
 	public void setTick(DepthPushTick tick) {
 		this.tick = tick;
 	}
-
 
 }

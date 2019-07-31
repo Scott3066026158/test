@@ -4,7 +4,7 @@ public class MarketKLineData {
 
 	public MarketKLineData() {
 	}
-	
+
 	public SubKLineData m_subKLineData;
 	public double m_avgPrice;
 	public double m_date;

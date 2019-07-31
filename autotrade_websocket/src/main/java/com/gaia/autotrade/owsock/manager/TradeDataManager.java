@@ -13,37 +13,37 @@ public class TradeDataManager {
 
 	public void OnOrders(ArrayList<CoinOrder> vec) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void OnTrades(ArrayList<CoinTrade> vec) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void OnPositions(ArrayList<CoinPosition> vec) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void OnCancelOrderRecord(CancelOrder cancelOrder) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void OnHistoryWithdraw(ArrayList<WithdrawalApplyRecord> records) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void OnAddress(DepositAddress address) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void OnWithdrawalApplyRecord(WithdrawalApplyRecord withdrawalApplyRecord) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

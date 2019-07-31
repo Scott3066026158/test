@@ -37,7 +37,7 @@ public class WebSocketServletRequest {
 	public void setParamID(String paramID) {
 		this.m_paramID = paramID;
 	}
-	
+
 	public String getSid() {
 		return m_sid;
 	}

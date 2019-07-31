@@ -3,47 +3,46 @@ package com.gaia.autotrade.owsock.market_bean;
 import java.util.ArrayList;
 
 /**
- 股票实时数据
- 
-*/
-public class CoinNewData
-{
-	//平均价格
+ * 股票实时数据
+ * 
+ */
+public class CoinNewData {
+	// 平均价格
 	public double m_averagePrice;
-	//今虚实度
+	// 今虚实度
 	public double m_currDelta;
 	public int m_dVolume;
-	//交易所代码
+	// 交易所代码
 	public String m_exchangeID = "";
 	public int m_innerVol;
-	//昨天收盘价格
+	// 昨天收盘价格
 	public double m_lastClose;
-	//跌停价
+	// 跌停价
 	public double m_lowerLimit;
 	public int m_outerVol;
-	//昨收盘
+	// 昨收盘
 	public double m_preClose;
-	//昨虚实度
+	// 昨虚实度
 	public double m_preDelta;
-	//昨持仓量
+	// 昨持仓量
 	public double m_preOpenInterest;
-	//上次结算价
+	// 上次结算价
 	public double m_preSettlementPrice;
-	//本次结算价
+	// 本次结算价
 	public double m_settlementPrice;
-	//交易日
+	// 交易日
 	public String m_tradingDay = "";
 	public double m_turnoverRate;
-	//成交金额
+	// 成交金额
 	public double m_turnover;
-	//最后修改毫秒
+	// 最后修改毫秒
 	public int m_updateMillisec;
-	//最后修改时间
+	// 最后修改时间
 	public String m_updateTime = "";
-	//涨停价
+	// 涨停价
 	public double m_upperLimit;
 
-	public double m_avgPrice;   //平均价
+	public double m_avgPrice; // 平均价
 	public double m_assessment;
 	public double m_open;
 	public double m_openInterest;
@@ -70,8 +69,7 @@ public class CoinNewData
 	public int m_id;
 	public double m_rate;
 
-	public CoinNewData()
-	{
+	public CoinNewData() {
 		m_askPrices = new ArrayList<>();
 		m_askVols = new ArrayList<>();
 		m_bidPrices = new ArrayList<>();
@@ -79,15 +77,13 @@ public class CoinNewData
 		m_assessment = 0;
 	}
 
-	/** 
-	 复制数据
-	 
-	 @param data 数据
-	*/
-	public final void Copy(CoinNewData data)
-	{
-		if (data == null)
-		{
+	/**
+	 * 复制数据
+	 * 
+	 * @param data 数据
+	 */
+	public final void Copy(CoinNewData data) {
+		if (data == null) {
 			return;
 		}
 		m_assessment = data.m_assessment;
@@ -139,7 +135,7 @@ public class CoinNewData
 		m_settlementPrice = data.m_settlementPrice;
 		m_tradingDay = data.m_tradingDay;
 		m_turnover = data.m_turnover;
-		m_turnoverRate = data .m_turnoverRate;
+		m_turnoverRate = data.m_turnoverRate;
 		m_updateMillisec = data.m_updateMillisec;
 		m_updateTime = data.m_updateTime;
 		m_upperLimit = data.m_upperLimit;
@@ -149,17 +145,13 @@ public class CoinNewData
 		m_thirdPartPrice = data.m_thirdPartPrice;
 	}
 
-	public boolean VectorEqual(ArrayList<Double> list1, ArrayList<Double>list2)
-	{
+	public boolean VectorEqual(ArrayList<Double> list1, ArrayList<Double> list2) {
 		int size1 = list1.size();
 		int size2 = list2.size();
 
-		if(size1 == size2 && size1 > 0)
-		{
-			for(int i = 0; i < size1; i++)
-			{
-				if(list1.get(i) != list2.get(i))
-				{
+		if (size1 == size2 && size1 > 0) {
+			for (int i = 0; i < size1; i++) {
+				if (list1.get(i) != list2.get(i)) {
 					return false;
 				}
 			}
@@ -169,44 +161,28 @@ public class CoinNewData
 	}
 
 	public boolean Equals(Object obj) {
-		CoinNewData data = (CoinNewData)obj;
-		if (data == null) return false;
-		if (m_averagePrice == data.m_averagePrice
-				&& m_close == data.m_close
-				&& m_currDelta == data.m_currDelta
-				&& m_dVolume == data.m_dVolume
-				&& m_high == data.m_high
-				&& m_low == data.m_low
-				&& m_lowerLimit == data.m_lowerLimit
-				&& m_open == data.m_open
-				&& m_openInterest == data.m_openInterest
-				&& m_preClose == data.m_preClose
-				&& m_preDelta == data.m_preDelta
-				&& m_preOpenInterest == data.m_preOpenInterest
-				&& m_preSettlementPrice == data.m_preSettlementPrice
-				&& m_settlementPrice == data.m_settlementPrice
-				&& m_tradingDay.equals(data.m_tradingDay)
-				&& m_turnover == data.m_turnover
-				&& m_turnoverRate == data.m_turnoverRate
-				&& m_updateMillisec == data.m_updateMillisec
-				&& m_updateTime.equals(data.m_updateTime)
-				&& m_upperLimit == data.m_upperLimit
-				&& m_volume == data.m_volume
-				&& m_askPriceCount == data.m_askPriceCount
-				&& m_askVolCount == data.m_askVolCount
-				&& m_bidPriceCount == data.m_bidPriceCount
-				&& m_bidVolCount == data.m_bidVolCount
-				&& m_assessment == data.m_assessment
-				&& VectorEqual(m_askPrices, data.m_askPrices)
-				&& VectorEqual(m_askVols, data.m_askVols)
-				&& VectorEqual(m_bidPrices, data.m_bidPrices)
-				&& VectorEqual(m_bidVols, data.m_bidVols)
-				)
-		{
+		CoinNewData data = (CoinNewData) obj;
+		if (data == null)
+			return false;
+		if (m_averagePrice == data.m_averagePrice && m_close == data.m_close && m_currDelta == data.m_currDelta
+				&& m_dVolume == data.m_dVolume && m_high == data.m_high && m_low == data.m_low
+				&& m_lowerLimit == data.m_lowerLimit && m_open == data.m_open && m_openInterest == data.m_openInterest
+				&& m_preClose == data.m_preClose && m_preDelta == data.m_preDelta
+				&& m_preOpenInterest == data.m_preOpenInterest && m_preSettlementPrice == data.m_preSettlementPrice
+				&& m_settlementPrice == data.m_settlementPrice && m_tradingDay.equals(data.m_tradingDay)
+				&& m_turnover == data.m_turnover && m_turnoverRate == data.m_turnoverRate
+				&& m_updateMillisec == data.m_updateMillisec && m_updateTime.equals(data.m_updateTime)
+				&& m_upperLimit == data.m_upperLimit && m_volume == data.m_volume
+				&& m_askPriceCount == data.m_askPriceCount && m_askVolCount == data.m_askVolCount
+				&& m_bidPriceCount == data.m_bidPriceCount && m_bidVolCount == data.m_bidVolCount
+				&& m_assessment == data.m_assessment && VectorEqual(m_askPrices, data.m_askPrices)
+				&& VectorEqual(m_askVols, data.m_askVols) && VectorEqual(m_bidPrices, data.m_bidPrices)
+				&& VectorEqual(m_bidVols, data.m_bidVols)) {
 			return true;
 		}
 		return false;
 	}
+
 	@Override
 	public String toString() {
 		return "CoinNewData [m_averagePrice=" + m_averagePrice + ", m_currDelta=" + m_currDelta + ", m_dVolume="

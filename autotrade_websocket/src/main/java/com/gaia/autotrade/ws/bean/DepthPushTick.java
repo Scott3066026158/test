@@ -17,7 +17,7 @@ public class DepthPushTick {
 	public long getMrid() {
 		return mrid;
 	}
-	
+
 	@JSONField(name = "mrid")
 	public void setMrid(long mrid) {
 		this.mrid = mrid;

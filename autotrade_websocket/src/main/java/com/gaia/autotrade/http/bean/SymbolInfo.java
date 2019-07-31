@@ -132,13 +132,13 @@ public class SymbolInfo {
 	public void setLeverageRatio(int leverageRatio) {
 		this.leverageRatio = leverageRatio;
 	}
-	
-	public String convertStatusToState(int status){
-		if(status == 0) {
+
+	public String convertStatusToState(int status) {
+		if (status == 0) {
 			this.state = "online";
-		}else if(status == 1) {
+		} else if (status == 1) {
 			this.state = "suspend";
-		}else {
+		} else {
 			this.state = "offline";
 		}
 		return this.state;

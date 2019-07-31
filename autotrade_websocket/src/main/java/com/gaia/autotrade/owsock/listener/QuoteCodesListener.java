@@ -1,7 +1,5 @@
 package com.gaia.autotrade.owsock.listener;
 
-
-public interface QuoteCodesListener
-{
-    void OnQuoteCodesCallBack();
+public interface QuoteCodesListener {
+	void OnQuoteCodesCallBack();
 }

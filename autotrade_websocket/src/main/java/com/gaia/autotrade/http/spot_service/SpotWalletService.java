@@ -17,6 +17,5 @@ public class SpotWalletService {
 		// m_tradeService.ReqWithdrawal(flag, traderID, code, outAddr, memo, balance)
 		return null;
 	}
-	
-	
+
 }

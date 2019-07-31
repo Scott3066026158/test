@@ -52,7 +52,7 @@ public class MarketWebSocket {
 	public void setWebSocketControllerManager(WebSocketControllerManager wsConManager) {
 		MarketWebSocket.m_wsConManager = wsConManager;
 	}
-	
+
 	@Autowired
 	public void setWebSocketSubManager(WebSocketSubManager subDataManager) {
 		MarketWebSocket.m_subDataManager = subDataManager;
@@ -114,6 +114,7 @@ public class MarketWebSocket {
 
 	/**
 	 * 发送Msg
+	 * 
 	 * @param msg 需要发送的对象
 	 * @return 发送成功返回字符串，失败返回null
 	 */
@@ -121,12 +122,12 @@ public class MarketWebSocket {
 		try {
 			String text = JSON.toJSONString(msg);
 			m_session.getBasicRemote().sendText(text);
-			
+
 			return text;
 		} catch (IOException e) {
 			log.error("Message发送失败!");
 			return null;
-		} catch (Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 			log.error("Message发送失败!");
 			return null;
