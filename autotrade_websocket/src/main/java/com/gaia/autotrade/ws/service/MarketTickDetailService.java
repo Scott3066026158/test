@@ -12,7 +12,7 @@ import com.gaia.autotrade.ws.manager.WebSocketServiceManager;
 import com.gaia.autotrade.ws.manager.WebSocketSubManager;
 
 @Component
-public class MarketTickService extends MarketBaseService {
+public class MarketTickDetailService extends MarketBaseService {
 
 	// 行情数据管理器
 	private MarketDataManager m_mkDataManager = MarketDataManager.getInstance();
@@ -20,8 +20,8 @@ public class MarketTickService extends MarketBaseService {
 	private WebSocketSubManager m_subDataManager;
 	
 	// 设置服务Key
-	public MarketTickService() {
-		setServiceKey("tick");
+	public MarketTickDetailService() {
+		setServiceKey("detail");
 	}
 
 	// 在服务管理器中注册

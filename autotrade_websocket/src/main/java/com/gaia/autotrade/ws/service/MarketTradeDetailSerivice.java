@@ -1,7 +1,5 @@
 package com.gaia.autotrade.ws.service;
 
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,24 +11,17 @@ import com.gaia.autotrade.ws.global.PublicField;
 import com.gaia.autotrade.ws.manager.WebSocketServiceManager;
 import com.gaia.autotrade.ws.manager.WebSocketSubManager;
 
-/**
- * 处理K线数据
- * 
- * @author GAIA
- *
- */
 @Component
-public class MarketKLineService extends MarketBaseService {
+public class MarketTradeDetailSerivice extends MarketBaseService {
 
 	// 行情数据管理器
 	private MarketDataManager m_mkDataManager = MarketDataManager.getInstance();
-	
 	// 订阅管理器
 	private WebSocketSubManager m_subDataManager;
-
+	
 	// 设置服务Key
-	public MarketKLineService() {
-		setServiceKey("kline");
+	public MarketTradeDetailSerivice() {
+		setServiceKey("trade");
 	}
 
 	// 在服务管理器中注册
@@ -38,26 +29,20 @@ public class MarketKLineService extends MarketBaseService {
 	private void setWebSocketServiceManager(WebSocketServiceManager wsSerManager) {
 		wsSerManager.addService(this);
 	}
-	
-	@Autowired
-	private void setWebSocketSubManager(WebSocketSubManager subDataManager) {
-		m_subDataManager = subDataManager;
-	}
 
 	@Override
 	public int RevWsSub(WebSocketServletRequest request, WebSocketServletResponse response) {
-		Map<String, String> params = request.getParams();
-		String pair = params.get("pair");
-		String param = params.get("param");
-		if(!m_mkDataManager.isExistPair(pair)) {
+		String pair = request.getParams().get("pair");
+		String sid = request.getParams().get("sid");
+		if(m_mkDataManager.isExistPair(pair)) {
 			response.setStatus(PublicField.FAIL_STATUS);
-			response.setMsg("Pair：" + pair + ",不是一个合法的Pair");
+			response.setMsg("Pair：" + pair+ ",不是一个合法的Pair");    //对子
 		}
 		SubDataBean bean = new SubDataBean();
 		bean.setPair(pair);
-		bean.setSid(request.getSid());
+		bean.setSid(sid);
 		bean.setTopic(request.getTopic());
-		m_subDataManager.putCallBackKLine(bean);
+		m_subDataManager.putCallBackTick(bean);
 		response.setStatus(PublicField.SUCCESSFUL_STATUS);
 		response.setRequestParms(request.getTopic());
 		return 0;
@@ -68,5 +53,4 @@ public class MarketKLineService extends MarketBaseService {
 		revNoProvideReq(request, response);
 		return 0;
 	}
-
 }

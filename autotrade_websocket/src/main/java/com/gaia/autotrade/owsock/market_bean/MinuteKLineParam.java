@@ -1,6 +1,6 @@
 package com.gaia.autotrade.owsock.market_bean;
 
-public class MinuteKLineDate {
+public class MinuteKLineParam {
     public int m_cycle;
     public int m_day;
     public int m_hour;
@@ -16,7 +16,7 @@ public class MinuteKLineDate {
      @param date 数据
      @return 是否相同
      */
-    public final boolean Equal(MinuteKLineDate date)
+    public final boolean Equal(MinuteKLineParam date)
     {
         if (date == null)
         {

@@ -7,7 +7,6 @@ import com.gaia.autotrade.owsock.base.BaseService;
 import com.gaia.autotrade.owsock.base.Binary;
 import com.gaia.autotrade.owsock.base.CMessage;
 import com.gaia.autotrade.owsock.global.BusinessIDs;
-import com.gaia.autotrade.owsock.global.DataCenter;
 import com.gaia.autotrade.owsock.manager.TradeDataManager;
 import com.gaia.autotrade.owsock.trade_bean.CancelOrder;
 import com.gaia.autotrade.owsock.trade_bean.CoinOrder;

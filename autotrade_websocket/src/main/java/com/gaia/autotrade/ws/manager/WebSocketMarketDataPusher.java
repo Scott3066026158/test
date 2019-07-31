@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.gaia.autotrade.owsock.manager.MarketDataManager;
 import com.gaia.autotrade.owsock.market_bean.MarketDepthData;
-import com.gaia.autotrade.owsock.market_bean.MarketTickData;
+import com.gaia.autotrade.owsock.market_bean.MarketTickDetailData;
 import com.gaia.autotrade.ws.base.MarketWebSocket;
 import com.gaia.autotrade.ws.bean.DepthPushTick;
 import com.gaia.autotrade.ws.bean.ResponseMsg;
@@ -31,7 +31,7 @@ public class WebSocketMarketDataPusher {
 	private List<MarketDepthData> m_depthPushList = new ArrayList<MarketDepthData>();
 
 	// Tick数据推送列表
-	private List<MarketTickData> m_tickPushList = new ArrayList<MarketTickData>();
+	private List<MarketTickDetailData> m_tickPushList = new ArrayList<MarketTickDetailData>();
 
 	// 订阅者管理器
 	protected WebSocketSubManager m_subDataManager;
@@ -54,7 +54,7 @@ public class WebSocketMarketDataPusher {
 	}
 
 	// 推送Tick数据
-	public synchronized void addTickPushPair(MarketTickData pushPair) {
+	public synchronized void addTickPushPair(MarketTickDetailData pushPair) {
 		m_tickPushList.add(pushPair);
 		synchronized (m_tickPushThread) {
 			m_tickPushThread.notify();
@@ -62,8 +62,8 @@ public class WebSocketMarketDataPusher {
 	}
 
 	// 获取需要推送的Tick数据
-	protected synchronized ArrayList<MarketTickData> getTickPushPair() {
-		ArrayList<MarketTickData> list = new ArrayList<MarketTickData>();
+	protected synchronized ArrayList<MarketTickDetailData> getTickPushPair() {
+		ArrayList<MarketTickDetailData> list = new ArrayList<MarketTickDetailData>();
 		list.addAll(m_tickPushList);
 		m_tickPushList.clear();
 		return list;
@@ -196,12 +196,12 @@ class TickPushThread extends Thread {
 		while (true) {
 			try {
 				// 获取推送的深度数据
-				List<MarketTickData> depthTickList = pusher.getTickPushPair();
+				List<MarketTickDetailData> depthTickList = pusher.getTickPushPair();
 				if(depthTickList.size() == 0) {
 					Thread.sleep(1000);
 					continue;
 				}
-				for (MarketTickData data : depthTickList) {
+				for (MarketTickDetailData data : depthTickList) {
 					Map<String, SubDataBean> subMap = pusher.m_subDataManager.getAllCallBackDepthByNoCopy(data.m_code);
 					if(subMap == null){
 						System.out.println("交易对子:" + data.m_code + "暂时无人订阅Tick数据!");
@@ -227,7 +227,7 @@ class TickPushThread extends Thread {
 	}
 	
 	// 此方法需要优化，对于每一笔行情，此对象只需要一个
-		public ResponseMsg generateResponseMsg(MarketTickData data, SubDataBean bean) {
+		public ResponseMsg generateResponseMsg(MarketTickDetailData data, SubDataBean bean) {
 			long timestamp = System.currentTimeMillis();
 			long timesecond = timestamp / 1000;
 

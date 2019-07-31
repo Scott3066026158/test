@@ -1,6 +1,6 @@
 package com.gaia.autotrade.owsock.market_bean;
 
-public class MarketTickData {
+public class MarketTickDetailData {
 	//24小时成交额
 	public double m_tradeAmountIn24Hour;
 	//24小时成交量
@@ -32,13 +32,13 @@ public class MarketTickData {
 	public String m_tradeTime;
 	
 	
-	public MarketTickData()
+	public MarketTickDetailData()
 	{
 		
 	}
 	
 	//提取Tick数据中有效数据
-	public MarketTickData coinNewDataToMarketTickData(CoinNewData coinNewData) {
+	public MarketTickDetailData coinNewDataToMarketTickData(CoinNewData coinNewData) {
 		
 		this.m_tradeAmountIn24Hour = coinNewData.m_turnover;
 		this.m_tradeVolIn24Hour = coinNewData.m_volume;
@@ -58,7 +58,7 @@ public class MarketTickData {
 		return this;
 	}
 	
-	public MarketTickData copy(MarketTickData data) {
+	public MarketTickDetailData copy(MarketTickDetailData data) {
 		this.m_tradeAmountIn24Hour = data.m_tradeAmountIn24Hour;
 		this.m_tradeVolIn24Hour = data.m_tradeVolIn24Hour;
 		this.m_topPriceIn24Hour = data.m_topPriceIn24Hour;
@@ -77,8 +77,8 @@ public class MarketTickData {
 		return this;
 	}
 	
-	public MarketTickData copy() {
-		MarketTickData data = new MarketTickData();
+	public MarketTickDetailData copy() {
+		MarketTickDetailData data = new MarketTickDetailData();
 		data.m_tradeAmountIn24Hour = this.m_tradeAmountIn24Hour;
 		data.m_tradeVolIn24Hour = this.m_tradeVolIn24Hour;
 		data.m_topPriceIn24Hour = this.m_topPriceIn24Hour;

@@ -4,7 +4,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import com.gaia.autotrade.owsock.global.DataCenter;
 
 @SpringBootApplication
 public class AutotradeWebsocketApplication {
@@ -12,8 +11,6 @@ public class AutotradeWebsocketApplication {
 	public static void main(String[] args) {
 		ConfigurableApplicationContext context = SpringApplication.run(AutotradeWebsocketApplication.class, args);
 		Applicaton.setContext(context);
-		DataCenter.StartService();
-		DataCenter.Connect();
 	}
 
 }

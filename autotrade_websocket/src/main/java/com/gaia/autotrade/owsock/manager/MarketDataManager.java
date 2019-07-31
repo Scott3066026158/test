@@ -8,9 +8,11 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.gaia.autotrade.owsock.market_bean.MarketDepthData;
-import com.gaia.autotrade.owsock.market_bean.MarketTickData;
+import com.gaia.autotrade.owsock.market_bean.MarketKLineData;
+import com.gaia.autotrade.owsock.market_bean.MarketTickDetailData;
 import com.gaia.autotrade.owsock.market_bean.MarketUserInfo;
 import com.gaia.autotrade.owsock.market_bean.SecurityInfo;
+import com.gaia.autotrade.owsock.market_bean.SubKLineData;
 import com.gaia.autotrade.ws.manager.WebSocketMarketDataPusher;
 import com.gaia.autotrade.ws.manager.WebSocketSubManager;
 
@@ -27,14 +29,15 @@ public class MarketDataManager {
 	// 缓存Depth行情数据
 	private ConcurrentHashMap<String, MarketDepthData> m_depthDataMap = new ConcurrentHashMap<String, MarketDepthData>();
 	// 缓存Tick行情数据
-	private ConcurrentHashMap<String, MarketTickData> m_tickDataMap = new ConcurrentHashMap<String, MarketTickData>();
+	private ConcurrentHashMap<String, MarketTickDetailData> m_tickDataMap = new ConcurrentHashMap<String, MarketTickDetailData>();
+	// 缓存KLine行情数据Map<交易对子+分钟线, KLine数据>
+	private ConcurrentHashMap<String, MarketKLineData> m_klineDataMap = new ConcurrentHashMap<String, MarketKLineData>();
 	// 合约信息表
 	private ConcurrentHashMap<String, SecurityInfo> m_securitiesMap = new ConcurrentHashMap<String, SecurityInfo>();
 	// 交易对子表
 	private ConcurrentHashMap<String, String> m_tradePairMap = new ConcurrentHashMap<String, String>();
 	// 币种表
 	private ConcurrentHashMap<String, String> m_coinMap = new ConcurrentHashMap<String, String>();
-
 	
 
 	// 获取自身
@@ -102,27 +105,65 @@ public class MarketDataManager {
 	}
 
 	/**
-	 * 获取指定交易对子Depth Data
+	 * 获取指定交易对子Kline Data
 	 * 
 	 * @param pair key
 	 * @return 存在返回数据，不存在返回null
 	 */
-	public MarketTickData getTickData(String pair) {
-		MarketTickData data = m_tickDataMap.get(pair);
+	public MarketKLineData getKLineData(String pairTime) {
+		MarketKLineData data = m_klineDataMap.get(pairTime);
 		return data.copy();
 	}
 
 	/**
-	 * 获取所有交易对子Depth Data
+	 * 获取所有交易对子时间线Kline Data
 	 * 
 	 * @return 返回所有
 	 */
-	public List<MarketTickData> getTickDatas() {
-		ArrayList<MarketTickData> result = new ArrayList<MarketTickData>();
-		Iterator<Entry<String, MarketTickData>> iter = m_tickDataMap.entrySet().iterator();
+	public List<MarketKLineData> getKLineDatas() {
+		ArrayList<MarketKLineData> result = new ArrayList<MarketKLineData>();
+		Iterator<Entry<String, MarketKLineData>> iter = m_klineDataMap.entrySet().iterator();
 		while (iter.hasNext()) {
-			Map.Entry<String, MarketTickData> entry = (Map.Entry<String, MarketTickData>) iter.next();
-			MarketTickData val = entry.getValue();
+			Map.Entry<String, MarketKLineData> entry = (Map.Entry<String, MarketKLineData>) iter.next();
+			MarketKLineData val = entry.getValue();
+			result.add(val.copy());
+		}
+		return result;
+	}
+
+	/**
+	 * 添加或更新对应的交易对子的Tick数据
+	 * 
+	 * @param data 最新的KLine数据
+	 */
+	public void putKLineData(MarketKLineData data) {
+		SubKLineData subData = data.m_subKLineData;
+		String key = subData.m_code + subData.m_cycle;
+		m_klineDataMap.put(key, data);
+	}
+	
+	/**
+	 * 获取指定交易对子KLine Data
+	 * 
+	 * @param pair key
+	 * @return 存在返回数据，不存在返回null
+	 */
+	public MarketTickDetailData getTickData(String key) {
+		MarketTickDetailData data = m_tickDataMap.get(key);
+		return data.copy();
+	}
+
+	/**
+	 * 获取所有交易对子Tick Data
+	 * 
+	 * @return 返回所有
+	 */
+	public List<MarketTickDetailData> getTickDatas() {
+		ArrayList<MarketTickDetailData> result = new ArrayList<MarketTickDetailData>();
+		Iterator<Entry<String, MarketTickDetailData>> iter = m_tickDataMap.entrySet().iterator();
+		while (iter.hasNext()) {
+			Map.Entry<String, MarketTickDetailData> entry = (Map.Entry<String, MarketTickDetailData>) iter.next();
+			MarketTickDetailData val = entry.getValue();
 			result.add(val.copy());
 		}
 		return result;
@@ -133,9 +174,10 @@ public class MarketDataManager {
 	 * 
 	 * @param data 最新的Tick数据
 	 */
-	public void putTickData(MarketTickData data) {
+	public void putTickData(MarketTickDetailData data) {
 		m_tickDataMap.put(data.m_lowCode, data);
 	}
+
 
 	/**
 	 * 填充所有所有合约的信息，在行情启动的时候接收

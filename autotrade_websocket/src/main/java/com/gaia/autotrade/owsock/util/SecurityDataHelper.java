@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 import com.gaia.autotrade.owsock.bean.Indicator;
 import com.gaia.autotrade.owsock.bean.IndicatorData;
-import com.gaia.autotrade.owsock.market_bean.CoinData;
+import com.gaia.autotrade.owsock.market_bean.MarketKLineData;
 import com.gaia.autotrade.owsock.market_bean.KeyFields;
-import com.gaia.autotrade.owsock.market_bean.MinuteKLineDate;
+import com.gaia.autotrade.owsock.market_bean.MinuteKLineParam;
 
 import owchart.owlib.Base.CMathLib;
 import owchart.owlib.Base.RefObject;
@@ -43,13 +43,13 @@ public class SecurityDataHelper
      @param fields 字段
      @param historyDatas 历史数据
      */
-    public static void BindHistoryDatas(ChartA chart, CTable dataSource, java.util.ArrayList<CIndicator> indicators, int[] fields, java.util.ArrayList<CoinData> historyDatas, boolean  showMinuteLine)
+    public static void BindHistoryDatas(ChartA chart, CTable dataSource, java.util.ArrayList<CIndicator> indicators, int[] fields, java.util.ArrayList<MarketKLineData> historyDatas, boolean  showMinuteLine)
     {
         dataSource.Clear();
         int sizeData = historyDatas.size();
         if (showMinuteLine)
         {
-            CoinData securityData = historyDatas.get(0);
+            MarketKLineData securityData = historyDatas.get(0);
             double date = securityData.m_date;
             byte tm_year = 0;
             byte tm_mon = 0;
@@ -129,7 +129,7 @@ public class SecurityDataHelper
         int columnsCount = dataSource.GetColumnsCount();
         for (int i = 0; i < size; i++)
         {
-            CoinData securityData = historyDatas.get(i);
+            MarketKLineData securityData = historyDatas.get(i);
             if (dataSource == chart.GetDataSource())
             {
                 if(securityData.m_close > 0) {
@@ -162,7 +162,7 @@ public class SecurityDataHelper
         }
     }
 
-    public static void BindHistoryVolAndAmountDatas(CTable dataSource, int[] fields, ArrayList<CoinData> historyDatas)
+    public static void BindHistoryVolAndAmountDatas(CTable dataSource, int[] fields, ArrayList<MarketKLineData> historyDatas)
     {
         dataSource.Clear();
         int size = (int)historyDatas.size();
@@ -171,7 +171,7 @@ public class SecurityDataHelper
         int columnsCount = dataSource.GetColumnsCount();
         for (int i = 0; i < size; i++)
         {
-            CoinData securityData = historyDatas.get(i);
+            MarketKLineData securityData = historyDatas.get(i);
             double[] ary = new double[columnsCount];
             ary[0] = securityData.m_volume;
             ary[1] = securityData.m_amount;
@@ -186,7 +186,7 @@ public class SecurityDataHelper
      * @param cycle
      * @return
      */
-    public static int CalculateMinuteKLineDate(MinuteKLineDate minuteDate, int type, int cycle)
+    public static int CalculateMinuteKLineDate(MinuteKLineParam minuteDate, int type, int cycle)
     {
         if(cycle < KeyFields.CYCLE_MINUTE_1 || cycle > KeyFields.CYCLE_MINUTE_60)
         {
@@ -421,7 +421,7 @@ public class SecurityDataHelper
      @param securityData 证券数据
      @return 索引
      */
-    public static int InsertData(ChartA chart, CTable dataSource, int[] fields, CoinData securityData)
+    public static int InsertData(ChartA chart, CTable dataSource, int[] fields, MarketKLineData securityData)
     {
         double close = securityData.m_close, high = securityData.m_high, low = securityData.m_low,
                 open = securityData.m_open, avgPrice = securityData.m_avgPrice, volume = securityData.m_volume,
@@ -511,7 +511,7 @@ public class SecurityDataHelper
      @param latestData 实时数据
      @return 索引
      */
-    public static int InsertLatestData(ChartA chart, CTable dataSource, java.util.ArrayList<CIndicator> indicators, int[] fields, CoinData latestData)
+    public static int InsertLatestData(ChartA chart, CTable dataSource, java.util.ArrayList<CIndicator> indicators, int[] fields, MarketKLineData latestData)
     {
         if (latestData.m_close > 0 && latestData.m_volume > 0)
         {

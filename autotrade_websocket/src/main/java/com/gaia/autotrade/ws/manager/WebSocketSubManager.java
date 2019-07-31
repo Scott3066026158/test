@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.gaia.autotrade.owsock.manager.MarketDataManager;
 import com.gaia.autotrade.owsock.market_bean.MarketDepthData;
-import com.gaia.autotrade.owsock.market_bean.MarketTickData;
+import com.gaia.autotrade.owsock.market_bean.MarketTickDetailData;
 import com.gaia.autotrade.ws.bean.SubDataBean;
 
 @Component
@@ -29,11 +29,14 @@ public class WebSocketSubManager{
 	private ConcurrentHashMap<String, ConcurrentHashMap<String, SubDataBean>> m_depthDataCallBackSubMap = new ConcurrentHashMap<String, ConcurrentHashMap<String, SubDataBean>>();
 	// Tick数据回调订阅者 (即到即发)
 	private ConcurrentHashMap<String, ConcurrentHashMap<String, SubDataBean>> m_tickDataCallBackSubMap = new ConcurrentHashMap<String, ConcurrentHashMap<String, SubDataBean>>();
-
+	// KLine数据回调订阅者(即到即发)
+	private ConcurrentHashMap<String, ConcurrentHashMap<String, SubDataBean>> m_klineDataCallBackSubMap = new ConcurrentHashMap<String, ConcurrentHashMap<String, SubDataBean>>();
 	// Depth数据回调订阅者 (间隔发送)
 	private ConcurrentHashMap<String, ConcurrentHashMap<String, SubDataBean>> m_depthDataIntervalSubMap = new ConcurrentHashMap<String, ConcurrentHashMap<String, SubDataBean>>();
 	// Tick数据回调订阅者 (间隔发送)
 	private ConcurrentHashMap<String, ConcurrentHashMap<String, SubDataBean>> m_tickDataIntervalSubMap = new ConcurrentHashMap<String, ConcurrentHashMap<String, SubDataBean>>();
+	// KLine数据回调订阅者 (间隔发送)
+	private ConcurrentHashMap<String, ConcurrentHashMap<String, SubDataBean>> m_klineDataIntervalSubMap = new ConcurrentHashMap<String, ConcurrentHashMap<String, SubDataBean>>();
 
 	// 行情数据推送器
 	private WebSocketMarketDataPusher m_marketDataPusher;
@@ -115,7 +118,7 @@ public class WebSocketSubManager{
 		return true;
 	}
 	
-	//根据sid删除订阅者
+	//根据sid删除深度订阅者
 	public boolean removeCallBackDepth(String sid) {
 		Iterator<Entry<String, ConcurrentHashMap<String, SubDataBean>>> iter = m_depthDataCallBackSubMap.entrySet().iterator();
 		while (iter.hasNext()) {
@@ -168,8 +171,8 @@ public class WebSocketSubManager{
 			m_tickDataCallBackSubMap.put(bean.getPair(), map);
 		}
 		//添加订阅的同时推送一笔最新数据
-		MarketTickData data = m_marketDataManager.getTickData(bean.getPair());
-		//m_marketDataPusher.addTickPushPair(bean.getPair());
+		MarketTickDetailData data = m_marketDataManager.getTickData(bean.getPair());
+		m_marketDataPusher.addTickPushPair(data);
 		return true;
 	}
 
@@ -178,6 +181,82 @@ public class WebSocketSubManager{
 		if (m_tickDataCallBackSubMap.containsKey(pair)) {
 			ConcurrentHashMap<String, SubDataBean> queue = m_tickDataCallBackSubMap.get(pair);
 			queue.remove(sid);
+		}
+		return true;
+	}
+	
+	// 获取KLine订阅者集合(深克隆)
+	public Map<String, SubDataBean> getAllCallBackKLine(String pair) {
+		if (m_klineDataCallBackSubMap.containsKey(pair)) {
+			ConcurrentHashMap<String, SubDataBean> result = new ConcurrentHashMap<String, SubDataBean>();
+			ConcurrentHashMap<String, SubDataBean> queue = m_klineDataCallBackSubMap.get(pair);
+			Iterator<Map.Entry<String, SubDataBean>> iter = queue.entrySet().iterator();
+			while (iter.hasNext()) {
+				Map.Entry<String, SubDataBean> entry = iter.next();
+				SubDataBean newBean = entry.getValue().copy();
+				result.put(newBean.getSid(), newBean);
+			}
+			return result;
+		} else {
+			return null;
+		}
+	}
+	
+	// 获取KLine订阅者集合(浅克隆)
+	public Map<String, SubDataBean> getAllCallBackKLineByNoCopy(String pair) {
+		if (m_klineDataCallBackSubMap.containsKey(pair)) {
+			ConcurrentHashMap<String, SubDataBean> result = new ConcurrentHashMap<String, SubDataBean>();
+			ConcurrentHashMap<String, SubDataBean> queue = m_klineDataCallBackSubMap.get(pair);
+			result.putAll(queue);
+			return result;
+		} else {
+			return null;
+		}
+	}
+
+	// 获取KLine订阅者
+	public SubDataBean getCallBackKLine(String pair, String sid) {
+		if (m_klineDataCallBackSubMap.containsKey(pair)) {
+			SubDataBean bean = m_klineDataCallBackSubMap.get(pair).get(sid);
+			if (bean == null) {
+				return null;
+			} else {
+				return bean.copy();
+			}
+		} else {
+			return null;
+		}
+	}
+
+	// 添加KLine订阅
+	public boolean putCallBackKLine(SubDataBean bean) {
+		if (m_klineDataCallBackSubMap.containsKey(bean.getPair())) {
+			ConcurrentHashMap<String, SubDataBean> queue = m_klineDataCallBackSubMap.get(bean.getPair());
+			queue.put(bean.getSid(), bean);
+		} else {
+			ConcurrentHashMap<String, SubDataBean> map = new ConcurrentHashMap<String, SubDataBean>();
+			map.put(bean.getSid(), bean);
+			m_klineDataCallBackSubMap.put(bean.getPair(), map);
+		}
+		return true;
+	}
+
+	// 删除KLine订阅
+	public boolean removeCallBackKLine(String pair, String sid) {
+		if (m_klineDataCallBackSubMap.containsKey(pair)) {
+			ConcurrentHashMap<String, SubDataBean> queue = m_klineDataCallBackSubMap.get(pair);
+			queue.remove(sid);
+		}
+		return true;
+	}
+	
+	//根据sid删除KLine订阅者
+	public boolean removeCallBackKLine(String sid) {
+		Iterator<Entry<String, ConcurrentHashMap<String, SubDataBean>>> iter = m_klineDataCallBackSubMap.entrySet().iterator();
+		while (iter.hasNext()) {
+			Entry<String, ConcurrentHashMap<String, SubDataBean>> entry = iter.next();
+			ConcurrentHashMap<String, SubDataBean> subMap = entry.getValue();
+			subMap.remove(sid);
 		}
 		return true;
 	}
