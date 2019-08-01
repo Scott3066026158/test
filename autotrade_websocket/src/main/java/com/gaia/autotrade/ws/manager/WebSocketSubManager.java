@@ -146,6 +146,18 @@ public class WebSocketSubManager {
 		}
 	}
 
+	// 获取Tick订阅者集合(浅克隆)
+	public Map<String, SubDataBean> getAllCallBackTickByNoCopy(String pair) {
+		if (m_tickDataCallBackSubMap.containsKey(pair)) {
+			ConcurrentHashMap<String, SubDataBean> result = new ConcurrentHashMap<String, SubDataBean>();
+			ConcurrentHashMap<String, SubDataBean> queue = m_tickDataCallBackSubMap.get(pair);
+			result.putAll(queue);
+			return result;
+		} else {
+			return null;
+		}
+	}
+
 	// 获取Tick订阅者
 	public SubDataBean getCallBackTick(String pair, String sid) {
 		if (m_tickDataCallBackSubMap.containsKey(pair)) {

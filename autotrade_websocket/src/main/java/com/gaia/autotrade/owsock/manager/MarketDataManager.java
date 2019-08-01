@@ -139,6 +139,7 @@ public class MarketDataManager {
 		SubKLineData subData = data.m_subKLineData;
 		String key = subData.m_code + subData.m_cycle;
 		m_klineDataMap.put(key, data);
+		m_pushDataManager.addKLinePushPair(data);
 	}
 
 	/**
@@ -246,6 +247,15 @@ public class MarketDataManager {
 			result.add(new String(val));
 		}
 		return result;
+	}
+	
+	/**
+	 * 获取交易对子
+	 * 
+	 * @return 返回交易对子
+	 */
+	public String getTradePair(String key) {
+		return new String(m_tradePairMap.get(key));
 	}
 
 	/**

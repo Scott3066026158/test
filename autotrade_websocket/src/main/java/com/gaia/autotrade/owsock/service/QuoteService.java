@@ -61,7 +61,7 @@ public class QuoteService extends BaseService {
 			info.m_cycle = 1;
 			info.m_size = 1;
 			info.m_code = "SEED/BIC";
-			GetHistoryDatas(m_requestID, info);
+			GetHistoryDatas(info);
 			m_connected = true;
 		}
 		return socketID;
@@ -105,6 +105,9 @@ public class QuoteService extends BaseService {
 		SubKLineData dataInfo = new SubKLineData();
 		ArrayList<MarketKLineData> datas = new ArrayList<MarketKLineData>();
 		GetHistoryDatas(dataInfo, datas, binary);
+		for(MarketKLineData data : datas) {
+			m_marketDataManager.putKLineData(data);
+		}
 	}
 
 	private void RevPushDataTiny(Binary binary) {
@@ -218,8 +221,8 @@ public class QuoteService extends BaseService {
 	}
 
 	// 请求历史数据
-	public int GetHistoryDatas(int requestID, SubKLineData dataInfo) {
-		return Send(FUNCTIONID_MD_GETHISTORYDATA, requestID, GetSocketID(), dataInfo) > 0 ? 1 : 0;
+	public int GetHistoryDatas(SubKLineData dataInfo) {
+		return Send(FUNCTIONID_MD_GETHISTORYDATA, m_requestID, GetSocketID(), dataInfo) > 0 ? 1 : 0;
 	}
 
 	/**
@@ -364,6 +367,7 @@ public class QuoteService extends BaseService {
 				if (dataInfo.m_cycle == 0) {
 					data.m_avgPrice = binary.ReadDouble();
 				}
+				data.m_subKLineData = dataInfo.copy();
 				datas.add(data);
 			}
 			binary.Close();

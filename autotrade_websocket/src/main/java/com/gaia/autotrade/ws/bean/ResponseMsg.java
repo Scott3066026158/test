@@ -11,7 +11,7 @@ public class ResponseMsg {
 	private String errcode;
 	private String errmsg;
 	private String ch;
-	private DepthPushTick tick;
+	private Object tick;
 
 	public Long getTs() {
 		return ts;
@@ -85,12 +85,12 @@ public class ResponseMsg {
 		this.ch = ch;
 	}
 
-	public DepthPushTick getTick() {
+	public Object getTick() {
 		return tick;
 	}
 
 	@JSONField(name = "tick")
-	public void setTick(DepthPushTick tick) {
+	public void setTick(Object tick) {
 		this.tick = tick;
 	}
 
