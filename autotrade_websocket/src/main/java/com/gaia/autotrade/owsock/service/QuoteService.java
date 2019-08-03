@@ -57,11 +57,6 @@ public class QuoteService extends BaseService {
 			ReqLogin();
 			ReqSecurityInfo();
 			ReqPairs();
-			SubKLineData info = new SubKLineData();
-			info.m_cycle = 1;
-			info.m_size = 1;
-			info.m_code = "SEED/BIC";
-			GetHistoryDatas(info);
 			m_connected = true;
 		}
 		return socketID;

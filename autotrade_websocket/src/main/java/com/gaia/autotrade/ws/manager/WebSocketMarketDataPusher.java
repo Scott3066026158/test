@@ -444,7 +444,6 @@ class KLinePushThread extends Thread {
 				e.printStackTrace();
 				continue;
 			}
-
 		}
 	}
 

@@ -305,7 +305,7 @@ public class WebSocketSubManager {
 	// 删除KLine订阅
 	public boolean removeCallBackKLine(Integer key, String sid) {
 		if (m_klineDataCallBackSubMap.containsKey(key)) {
-			ConcurrentHashMap<String, SubKLineData> queue = m_klineDataCallBackSubMap.get(sid);
+			ConcurrentHashMap<String, SubKLineData> queue = m_klineDataCallBackSubMap.get(key);
 			queue.remove(sid);
 		}
 		return true;

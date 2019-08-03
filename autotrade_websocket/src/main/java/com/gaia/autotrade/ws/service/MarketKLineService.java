@@ -83,7 +83,12 @@ public class MarketKLineService extends MarketBaseService {
 		subParam.m_lowCode = pair;
 		subParam.m_code = m_mkDataManager.getTradePair(pair);
 		m_subDataManager.putCallBackKLine(subParam.hashCode(), subParam);
-		
+		if(m_quoteService.GetHistoryDatas(subParam) < 0) {
+			m_subDataManager.removeCallBackKLineReq(subParam.hashCode());
+			response.setStatus(PublicField.FAIL_STATUS);
+			response.setMsg("KLine数据请求失败");
+			return -1;
+		}
 		response.setStatus(PublicField.SUCCESSFUL_STATUS);
 		response.setRequestParms(request.getTopic());
 		return 0;
