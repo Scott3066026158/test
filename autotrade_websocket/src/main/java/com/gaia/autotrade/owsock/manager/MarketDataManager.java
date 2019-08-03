@@ -12,7 +12,7 @@ import com.gaia.autotrade.owsock.market_bean.MarketKLineData;
 import com.gaia.autotrade.owsock.market_bean.MarketTickDetailData;
 import com.gaia.autotrade.owsock.market_bean.MarketUserInfo;
 import com.gaia.autotrade.owsock.market_bean.SecurityInfo;
-import com.gaia.autotrade.owsock.market_bean.SubKLineData;
+import com.gaia.autotrade.ws.bean.SubKLineData;
 import com.gaia.autotrade.ws.manager.WebSocketMarketDataPusher;
 import com.gaia.autotrade.ws.manager.WebSocketSubManager;
 
@@ -31,7 +31,7 @@ public class MarketDataManager {
 	// 缓存Tick行情数据
 	private ConcurrentHashMap<String, MarketTickDetailData> m_tickDataMap = new ConcurrentHashMap<String, MarketTickDetailData>();
 	// 缓存KLine行情数据Map<交易对子+分钟线, KLine数据>
-	private ConcurrentHashMap<String, MarketKLineData> m_klineDataMap = new ConcurrentHashMap<String, MarketKLineData>();
+	private ConcurrentHashMap<Integer, MarketKLineData> m_klineDataMap = new ConcurrentHashMap<Integer, MarketKLineData>();
 	// 合约信息表
 	private ConcurrentHashMap<String, SecurityInfo> m_securitiesMap = new ConcurrentHashMap<String, SecurityInfo>();
 	// 交易对子表
@@ -121,9 +121,9 @@ public class MarketDataManager {
 	 */
 	public List<MarketKLineData> getKLineDatas() {
 		ArrayList<MarketKLineData> result = new ArrayList<MarketKLineData>();
-		Iterator<Entry<String, MarketKLineData>> iter = m_klineDataMap.entrySet().iterator();
+		Iterator<Entry<Integer, MarketKLineData>> iter = m_klineDataMap.entrySet().iterator();
 		while (iter.hasNext()) {
-			Map.Entry<String, MarketKLineData> entry = (Map.Entry<String, MarketKLineData>) iter.next();
+			Map.Entry<Integer, MarketKLineData> entry = (Map.Entry<Integer, MarketKLineData>) iter.next();
 			MarketKLineData val = entry.getValue();
 			result.add(val.copy());
 		}
@@ -137,8 +137,7 @@ public class MarketDataManager {
 	 */
 	public void putKLineData(MarketKLineData data) {
 		SubKLineData subData = data.m_subKLineData;
-		String key = subData.m_code + subData.m_cycle;
-		m_klineDataMap.put(key, data);
+		m_klineDataMap.put(subData.hashCode(), data);
 		m_pushDataManager.addKLinePushPair(data);
 	}
 

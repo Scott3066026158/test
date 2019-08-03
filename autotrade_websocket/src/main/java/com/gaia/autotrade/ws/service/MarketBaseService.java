@@ -24,7 +24,7 @@ public abstract class MarketBaseService {
 	 * @param response 回报数据
 	 * @return 根据返回值确定处理结果
 	 */
-	public abstract int RevWsSub(WebSocketServletRequest request, WebSocketServletResponse response);
+	public abstract int RevWsSub(WebSocketServletRequest request, WebSocketServletResponse response) throws Exception;
 
 	/**
 	 * 当接收到请求消息时调用此方法
@@ -33,7 +33,7 @@ public abstract class MarketBaseService {
 	 * @param response 回报数据
 	 * @return 根据返回值确定处理结果
 	 */
-	public abstract int RevWsReq(WebSocketServletRequest request, WebSocketServletResponse response);
+	public abstract int RevWsReq(WebSocketServletRequest request, WebSocketServletResponse response) throws Exception;
 
 	/**
 	 * Req服务未提供默认方法

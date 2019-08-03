@@ -47,7 +47,7 @@ public class SubController extends WebSocketController {
 			if (list.size() < 3) {
 				return getResponseErrorMsg("参数错误:" + sub, id);
 			}
-			HashMap<String, String> map = new HashMap<String, String>();
+			HashMap<String, Object> map = new HashMap<String, Object>();
 			String serviceName = list.get(0);
 			String pair = list.get(1);
 			String serviceKey = list.get(2);

@@ -6,9 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.gaia.autotrade.owsock.manager.MarketDataManager;
-import com.gaia.autotrade.owsock.market_bean.SubKLineData;
 import com.gaia.autotrade.owsock.service.QuoteService;
 import com.gaia.autotrade.ws.bean.SubDataBean;
+import com.gaia.autotrade.ws.bean.SubKLineData;
 import com.gaia.autotrade.ws.bean.WebSocketServletRequest;
 import com.gaia.autotrade.ws.bean.WebSocketServletResponse;
 import com.gaia.autotrade.ws.global.PublicField;
@@ -24,6 +24,8 @@ import com.gaia.autotrade.ws.manager.WebSocketSubManager;
 @Component
 public class MarketKLineService extends MarketBaseService {
 
+	// 请求K线唯一标识
+	private int m_count;
 	// 行情服务
 	private QuoteService m_quoteService;
 	// 行情数据管理器
@@ -47,12 +49,58 @@ public class MarketKLineService extends MarketBaseService {
 	private void setWebSocketSubManager(WebSocketSubManager subDataManager) {
 		m_subDataManager = subDataManager;
 	}
+	
+	@Autowired
+	private void setQuoteService(QuoteService quoteService) {
+		m_quoteService = quoteService;
+	}
 
 	@Override
-	public int RevWsSub(WebSocketServletRequest request, WebSocketServletResponse response) {
-		Map<String, String> params = request.getParams();
-		String pair = params.get("pair");
-		String param = params.get("param");
+	public int RevWsSub(WebSocketServletRequest request, WebSocketServletResponse response) throws Exception{
+		Map<String, Object> params = request.getParams();
+		String pair = (String)params.get("pair");
+		String param = (String)params.get("param");
+		if (!m_mkDataManager.isExistPair(pair)) {
+			response.setStatus(PublicField.FAIL_STATUS);
+			response.setMsg("Pair：" + pair + ",不是一个合法的Pair");
+			return -1;
+		}
+		int cycle = checkParam(param);
+		if(cycle == -1){
+			response.setStatus(PublicField.FAIL_STATUS);
+			response.setMsg("Param：" + param + ",不是一个支持的周期参数");
+			return -1;
+		}
+		SubKLineData subParam = new SubKLineData();
+		subParam.m_sid = request.getSid();
+		subParam.m_topic = request.getTopic();
+		subParam.m_cycle = cycle;
+		subParam.m_size = 1;
+		subParam.m_type = 116;
+		subParam.m_subscription = 0;
+		subParam.m_startDate = 0;
+		subParam.m_endDate = 0;
+		subParam.m_lowCode = pair;
+		subParam.m_code = m_mkDataManager.getTradePair(pair);
+		m_subDataManager.putCallBackKLine(subParam.hashCode(), subParam);
+		
+		response.setStatus(PublicField.SUCCESSFUL_STATUS);
+		response.setRequestParms(request.getTopic());
+		return 0;
+	}
+
+	@Override
+	public int RevWsReq(WebSocketServletRequest request, WebSocketServletResponse response) throws Exception {
+		Map<String, Object> params = request.getParams();
+		String pair = (String)params.get("pair");
+		String param = (String)params.get("param");
+		long from = (long)params.get("from");
+		long to = (long)params.get("to");
+		if(CheckTime(from, to)) {
+			response.setStatus(PublicField.FAIL_STATUS);
+			response.setMsg("请检查from与to参数");
+			return -1;
+		}
 		if (!m_mkDataManager.isExistPair(pair)) {
 			response.setStatus(PublicField.FAIL_STATUS);
 			response.setMsg("Pair：" + pair + ",不是一个合法的Pair");
@@ -68,8 +116,20 @@ public class MarketKLineService extends MarketBaseService {
 		bean.setPair(pair);
 		bean.setSid(request.getSid());
 		bean.setTopic(request.getTopic());
-		m_subDataManager.putCallBackKLine(bean);
-		if(ReqMarketKLineData(pair, cycle)) {
+
+		SubKLineData subParam = new SubKLineData();
+		subParam.m_cycle = cycle;
+		subParam.m_size = (int) ((from - to) / 60);
+		subParam.m_type = 116;
+		subParam.m_subscription = m_count;
+		subParam.m_startDate = from;
+		subParam.m_endDate = to;
+		subParam.m_lowCode = pair;
+		subParam.m_code = m_mkDataManager.getTradePair(pair);
+		m_subDataManager.putCallBackKLineReq(subParam.hashCode(), subParam);
+		
+		if(m_quoteService.GetHistoryDatas(subParam) < 0) {
+			m_subDataManager.removeCallBackKLineReq(subParam.hashCode());
 			response.setStatus(PublicField.FAIL_STATUS);
 			response.setMsg("KLine数据请求失败");
 			return -1;
@@ -79,18 +139,9 @@ public class MarketKLineService extends MarketBaseService {
 		return 0;
 	}
 
-	@Override
-	public int RevWsReq(WebSocketServletRequest request, WebSocketServletResponse response) {
-		revNoProvideReq(request, response);
-		return 0;
-	}
-
-	public boolean ReqMarketKLineData(String pair, int cycle) {
-		SubKLineData info = new SubKLineData();
-		info.m_cycle = cycle;
-		info.m_size = 1;
-		info.m_code = m_mkDataManager.getTradePair(pair);
-		return m_quoteService.GetHistoryDatas(info) > 0 ? true :false ;
+	private boolean CheckTime(long from, long to) {
+		if(to - from < 60) return false;
+		return true;
 	}
 	
 	//检查周期参数
@@ -117,5 +168,17 @@ public class MarketKLineService extends MarketBaseService {
 			default:
 				return -1;
 		}
+	}
+	
+	public boolean IsNull(String...params)
+	{
+		for(String param : params)
+		{
+			if(param == null || param.equals(""))
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 }

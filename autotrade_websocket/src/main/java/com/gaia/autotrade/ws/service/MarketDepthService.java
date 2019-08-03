@@ -39,9 +39,9 @@ public class MarketDepthService extends MarketBaseService {
 
 	@Override
 	public int RevWsSub(WebSocketServletRequest request, WebSocketServletResponse response) {
-		Map<String, String> params = request.getParams();
-		String pair = params.get("pair");
-		String param = params.get("param");
+		Map<String, Object> params = request.getParams();
+		String pair = (String)params.get("pair");
+		String param = (String)params.get("param");
 		if (!m_mkDataManager.isExistPair(pair)) {
 			response.setStatus(PublicField.FAIL_STATUS);
 			response.setMsg("Pair：" + pair + ",不是一个合法的Pair");

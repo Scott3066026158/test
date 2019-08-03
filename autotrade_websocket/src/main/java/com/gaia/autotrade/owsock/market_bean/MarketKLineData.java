@@ -1,5 +1,7 @@
 package com.gaia.autotrade.owsock.market_bean;
 
+import com.gaia.autotrade.ws.bean.SubKLineData;
+
 public class MarketKLineData {
 
 	public MarketKLineData() {

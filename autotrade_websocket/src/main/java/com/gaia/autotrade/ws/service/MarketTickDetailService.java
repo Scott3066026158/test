@@ -32,8 +32,8 @@ public class MarketTickDetailService extends MarketBaseService {
 
 	@Override
 	public int RevWsSub(WebSocketServletRequest request, WebSocketServletResponse response) {
-		String pair = request.getParams().get("pair");
-		String sid = request.getParams().get("sid");
+		String pair = (String)request.getParams().get("pair");
+		String sid = (String)request.getParams().get("sid");
 		if (m_mkDataManager.isExistPair(pair)) {
 			response.setStatus(PublicField.FAIL_STATUS);
 			response.setMsg("Pair：" + pair + ",不是一个合法的Pair"); // 对子

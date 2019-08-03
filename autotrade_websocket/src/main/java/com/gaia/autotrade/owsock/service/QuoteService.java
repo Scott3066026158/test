@@ -12,15 +12,15 @@ import com.gaia.autotrade.owsock.base.Binary;
 import com.gaia.autotrade.owsock.base.CMessage;
 import com.gaia.autotrade.owsock.global.BusinessIDs;
 import com.gaia.autotrade.owsock.manager.MarketDataManager;
-import com.gaia.autotrade.owsock.market_bean.MarketKLineData;
 import com.gaia.autotrade.owsock.market_bean.CoinNewData;
-import com.gaia.autotrade.owsock.market_bean.SubKLineData;
 import com.gaia.autotrade.owsock.market_bean.LatestDataInfo;
 import com.gaia.autotrade.owsock.market_bean.MarketDepthData;
+import com.gaia.autotrade.owsock.market_bean.MarketKLineData;
 import com.gaia.autotrade.owsock.market_bean.MarketTickDetailData;
 import com.gaia.autotrade.owsock.market_bean.MarketUserInfo;
 import com.gaia.autotrade.owsock.market_bean.SecurityInfo;
 import com.gaia.autotrade.owsock.market_bean.SecurityLatestDataTiny;
+import com.gaia.autotrade.ws.bean.SubKLineData;
 
 @Component
 public class QuoteService extends BaseService {
@@ -105,6 +105,10 @@ public class QuoteService extends BaseService {
 		SubKLineData dataInfo = new SubKLineData();
 		ArrayList<MarketKLineData> datas = new ArrayList<MarketKLineData>();
 		GetHistoryDatas(dataInfo, datas, binary);
+		if(datas.size() == 0) {
+			MarketKLineData data = new MarketKLineData();
+			datas.add(data);
+		}
 		for(MarketKLineData data : datas) {
 			m_marketDataManager.putKLineData(data);
 		}
@@ -347,6 +351,7 @@ public class QuoteService extends BaseService {
 	public static int GetHistoryDatas(SubKLineData dataInfo, ArrayList<MarketKLineData> datas, Binary binary) {
 		try {
 			dataInfo.m_code = binary.ReadString();
+			dataInfo.m_lowCode = dataInfo.m_code.replace("/", "").toLowerCase();
 			dataInfo.m_type = (int) binary.ReadChar();
 			dataInfo.m_size = binary.ReadInt();
 			dataInfo.m_cycle = binary.ReadInt();

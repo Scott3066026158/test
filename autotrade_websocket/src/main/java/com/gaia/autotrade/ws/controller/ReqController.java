@@ -2,7 +2,10 @@ package com.gaia.autotrade.ws.controller;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -47,7 +50,7 @@ public class ReqController extends WebSocketController {
 			if (list.size() < 3) {
 				return getResponseErrorMsg("参数错误:" + req, id);
 			}
-			HashMap<String, String> map = new HashMap<String, String>();
+			HashMap<String, Object> map = new HashMap<String, Object>();
 			String serviceName = list.get(0);
 			String pair = list.get(1);
 			String serviceKey = list.get(2);
@@ -60,6 +63,13 @@ public class ReqController extends WebSocketController {
 			}
 			map.put("pair", pair);
 			map.put("serviceKey", serviceKey);
+			
+			// 遍历取出其他参数
+			Iterator<Entry<String, Object>> it = msg.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry<String, Object> entry = it.next();
+				map.put(entry.getKey(), (String) entry.getValue());
+			}
 			MarketBaseService service = m_wsSerManager.getService(serviceKey);
 			WebSocketServletRequest request = new WebSocketServletRequest();
 			request.setParamID(id);
@@ -74,13 +84,12 @@ public class ReqController extends WebSocketController {
 			response.setStatus(PublicField.FAIL_STATUS);
 			response.setMsg("服务器未接收处理");
 			response.setData(null);
-
 			service.RevWsReq(request, response);
 
 			return convertWebSocketServletResponse(response);
 
 		} catch (ClassCastException e) {
-			return getResponseErrorMsg("id转换错误:", "");
+			return getResponseErrorMsg("参数类型转换错误:", (String) msg.get("id"));
 		} catch (Exception e) {
 			return getResponseErrorMsg("未知错误:" + req, (String) msg.get("id"));
 		}
@@ -94,7 +103,7 @@ public class ReqController extends WebSocketController {
 	// 生成错误信息对象
 	private ResponseMsg getResponseErrorMsg(String errMsg, String id) {
 		ResponseMsg resp = new ResponseMsg();
-		resp.setErrmsg("参数错误:" + errMsg);
+		resp.setErrmsg(errMsg);
 		resp.setTs(getServerTime());
 		resp.setStatus("error");
 		resp.setId(id);

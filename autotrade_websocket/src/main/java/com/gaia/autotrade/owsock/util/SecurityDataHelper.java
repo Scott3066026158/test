@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 import com.gaia.autotrade.owsock.bean.Indicator;
 import com.gaia.autotrade.owsock.bean.IndicatorData;
-import com.gaia.autotrade.owsock.market_bean.MarketKLineData;
 import com.gaia.autotrade.owsock.market_bean.KeyFields;
+import com.gaia.autotrade.owsock.market_bean.MarketKLineData;
 import com.gaia.autotrade.owsock.market_bean.MinuteKLineParam;
 
 import owchart.owlib.Base.CMathLib;

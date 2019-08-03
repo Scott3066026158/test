@@ -1,6 +1,6 @@
 package com.gaia.autotrade.ws.bean;
 
-public class KLinePushDataBean {
+public class KLinePushTick {
 	// unix时间，同时作为K线ID
 	private long id;
 	// 开盘价

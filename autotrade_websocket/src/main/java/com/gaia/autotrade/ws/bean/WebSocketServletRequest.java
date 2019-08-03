@@ -12,7 +12,7 @@ public class WebSocketServletRequest {
 	// 请求发起的会话ID
 	private String m_sid;
 	// 请求的主题参数
-	private Map<String, String> m_params;
+	private Map<String, Object> m_params;
 
 	public String getServiceName() {
 		return m_serviceName;
@@ -46,11 +46,11 @@ public class WebSocketServletRequest {
 		this.m_sid = sid;
 	}
 
-	public Map<String, String> getParams() {
+	public Map<String, Object> getParams() {
 		return m_params;
 	}
 
-	public void setParams(Map<String, String> params) {
+	public void setParams(Map<String, Object> params) {
 		this.m_params = params;
 	}
 }
