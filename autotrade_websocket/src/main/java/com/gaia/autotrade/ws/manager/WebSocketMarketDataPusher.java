@@ -12,6 +12,7 @@ import com.gaia.autotrade.owsock.manager.MarketDataManager;
 import com.gaia.autotrade.owsock.market_bean.MarketDepthData;
 import com.gaia.autotrade.owsock.market_bean.MarketKLineData;
 import com.gaia.autotrade.owsock.market_bean.MarketTickDetailData;
+import com.gaia.autotrade.owsock.market_bean.MarketTradeDetailData;
 import com.gaia.autotrade.owsock.service.QuoteService;
 import com.gaia.autotrade.ws.base.MarketWebSocket;
 import com.gaia.autotrade.ws.bean.DepthPushTick;
@@ -20,6 +21,7 @@ import com.gaia.autotrade.ws.bean.ResponseMsg;
 import com.gaia.autotrade.ws.bean.SubDataBean;
 import com.gaia.autotrade.ws.bean.SubKLineData;
 import com.gaia.autotrade.ws.bean.TickPushTick;
+import com.gaia.autotrade.ws.bean.TradePushTick;
 
 @Component
 public class WebSocketMarketDataPusher {
@@ -30,15 +32,21 @@ public class WebSocketMarketDataPusher {
 	// Tick数据订阅推送线程
 	private TickPushThread m_tickPushThread = new TickPushThread(this);
 
+	// Trade数据订阅推送线程
+	private TickPushThread m_tradePushThread = new TickPushThread(this);
+	
 	// KLine数据订阅推送线程
 	private KLinePushThread m_klinePushThread = new KLinePushThread(this);
 
-	// 深度数据推送列表
+	// Depth数据推送列表
 	private List<MarketDepthData> m_depthPushList = new ArrayList<MarketDepthData>();
 
 	// Tick数据推送列表
 	private List<MarketTickDetailData> m_tickPushList = new ArrayList<MarketTickDetailData>();
-
+	
+	// Trade数据推送列表
+	private List<MarketTradeDetailData> m_tradePushList = new ArrayList<MarketTradeDetailData>();
+	
 	// KLine数据推送列表
 	private List<MarketKLineData> m_klinePushList = new ArrayList<MarketKLineData>();
 
@@ -81,6 +89,19 @@ public class WebSocketMarketDataPusher {
 		m_tickPushList.clear();
 		return list;
 	}
+	
+	// 推送Trade数据
+	public synchronized void addTradePushPair(MarketTradeDetailData pushPair) {
+		m_tradePushList.add(pushPair);
+	}
+
+	// 获取需要推送的Trade数据
+	protected synchronized ArrayList<MarketTradeDetailData> getTradePushPair() {
+		ArrayList<MarketTradeDetailData> list = new ArrayList<MarketTradeDetailData>();
+		list.addAll(m_tradePushList);
+		m_tradePushList.clear();
+		return list;
+	}
 
 	// 推送深度数据
 	public synchronized void addKLinePushPair(MarketKLineData pushDepthData) {
@@ -100,6 +121,7 @@ public class WebSocketMarketDataPusher {
 		m_depthPushThread.start();
 		m_tickPushThread.start();
 		m_klinePushThread.start();
+		m_tradePushThread.start();
 		MarketDataManager.getInstance().setWebSocketMarketDataPusher(this);
 	}
 
@@ -156,6 +178,7 @@ class DepthPushThread extends Thread {
 							System.out.println("Depth数据推送成功:" + result);
 						}
 					}
+					pushCount++;
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -223,7 +246,7 @@ class TickPushThread extends Thread {
 	public void run() {
 		while (true) {
 			try {
-				// 获取推送的深度数据
+				// 获取推送的Tick数据
 				List<MarketTickDetailData> depthTickList = pusher.getTickPushPair();
 				if (depthTickList.size() == 0) {
 					Thread.sleep(1000);
@@ -246,6 +269,7 @@ class TickPushThread extends Thread {
 							System.out.println(WebSocketMarketDataPusher.class.getName() + "Tick数据推送失败");
 						}
 					}
+					pushCount++;
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -274,8 +298,77 @@ class TickPushThread extends Thread {
 		ResponseMsg msg = new ResponseMsg();
 		msg.setCh(bean.getTopic());
 		msg.setTs(timestamp);
+		msg.setTick(tick);
 		return msg;
 	}
+}
+
+//推送Trade数据线程
+class TradePushThread extends Thread {
+
+	private WebSocketMarketDataPusher pusher;
+
+	// 推送次数
+	private long pushCount;
+
+	public TradePushThread(WebSocketMarketDataPusher pusher) {
+		this.pusher = pusher;
+	}
+
+	@Override
+	public void run() {
+		while (true) {
+			try {
+				// 获取推送的深度数据
+				List<MarketTradeDetailData> depthTickList = pusher.getTradePushPair();
+				if (depthTickList.size() == 0) {
+					Thread.sleep(1000);
+					continue;
+				}
+				for (MarketTradeDetailData data : depthTickList) {
+					Map<String, SubDataBean> subMap = pusher.m_subDataManager.getAllCallBackTickByNoCopy(data.m_pair);
+					if (subMap == null) {
+						System.out.println("交易对子:" + data.m_pair + "暂时无人订阅Trade数据!");
+						continue;
+					}
+					Iterator<Map.Entry<String, SubDataBean>> iter = subMap.entrySet().iterator();
+					while (iter.hasNext()) {
+						Map.Entry<String, SubDataBean> entry = iter.next();
+						SubDataBean bean = entry.getValue();
+						MarketWebSocket sen = pusher.m_wsSenManager.getWebSocket(bean.getSid());
+						ResponseMsg msg = generateResponseMsg(data, bean);
+						String result = sen.sendMsg(msg);
+						if (result == null) {
+							System.out.println(WebSocketMarketDataPusher.class.getName() + "Trade数据推送失败");
+						}
+					}
+					pushCount++;
+				}
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+				continue;
+			}
+		}
+	}
+	
+	// 对于每一笔行情，此对象只需要一个
+	public ResponseMsg generateResponseMsg(MarketTradeDetailData data, SubDataBean bean) {
+		long timestamp = System.currentTimeMillis();
+		long timesecond = timestamp / 1000;
+
+		TradePushTick tick = new TradePushTick();
+		tick.setAmount(data.m_amount);
+		tick.setDirection("");
+		tick.setId((int)pushCount);
+		tick.setPrice(data.m_price);
+		tick.setTs((int)timestamp);
+		ResponseMsg msg = new ResponseMsg();
+		msg.setCh(bean.getTopic());
+		msg.setTs(timestamp);
+		msg.setTick(tick);
+		return msg;
+	}
+
 }
 
 //推送KLine数据线程

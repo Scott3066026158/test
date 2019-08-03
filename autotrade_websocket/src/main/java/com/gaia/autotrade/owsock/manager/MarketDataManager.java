@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.gaia.autotrade.owsock.market_bean.MarketDepthData;
 import com.gaia.autotrade.owsock.market_bean.MarketKLineData;
 import com.gaia.autotrade.owsock.market_bean.MarketTickDetailData;
+import com.gaia.autotrade.owsock.market_bean.MarketTradeDetailData;
 import com.gaia.autotrade.owsock.market_bean.MarketUserInfo;
 import com.gaia.autotrade.owsock.market_bean.SecurityInfo;
 import com.gaia.autotrade.ws.bean.SubKLineData;
@@ -30,6 +31,8 @@ public class MarketDataManager {
 	private ConcurrentHashMap<String, MarketDepthData> m_depthDataMap = new ConcurrentHashMap<String, MarketDepthData>();
 	// 缓存Tick行情数据
 	private ConcurrentHashMap<String, MarketTickDetailData> m_tickDataMap = new ConcurrentHashMap<String, MarketTickDetailData>();
+	// 缓存Trade行情数据
+	private ConcurrentHashMap<String, MarketTradeDetailData> m_tradeDataMap = new ConcurrentHashMap<String, MarketTradeDetailData>();
 	// 缓存KLine行情数据Map<交易对子+分钟线, KLine数据>
 	private ConcurrentHashMap<Integer, MarketKLineData> m_klineDataMap = new ConcurrentHashMap<Integer, MarketKLineData>();
 	// 合约信息表
@@ -175,8 +178,47 @@ public class MarketDataManager {
 	 */
 	public void putTickData(MarketTickDetailData data) {
 		m_tickDataMap.put(data.m_lowCode, data);
+		m_pushDataManager.addTickPushPair(data.copy());
 	}
 
+	/**
+	 * 添加或更新对应的交易对子的Trade数据
+	 * 
+	 * @param data 最新的Trade数据
+	 */
+	public void putTradeData(MarketTradeDetailData data) {
+		m_tradeDataMap.put(data.m_lowpair, data);
+		m_pushDataManager.addTradePushPair(data.copy());
+	}
+	
+	/**
+	 * 获取指定交易对子Trade Data
+	 * 
+	 * @param pair key
+	 * @return 存在返回数据，不存在返回null
+	 */
+	public MarketTradeDetailData getTradeData(String pair) {
+		MarketTradeDetailData data = m_tradeDataMap.get(pair);
+		return data.copy();
+	}
+	
+	/**
+	 * 获取所有交易对子Trade Data
+	 * 
+	 * @return 返回所有
+	 */
+	public List<MarketTradeDetailData> getTradeDatas() {
+		ArrayList<MarketTradeDetailData> result = new ArrayList<MarketTradeDetailData>();
+		Iterator<Entry<String, MarketTradeDetailData>> iter = m_tradeDataMap.entrySet().iterator();
+		while (iter.hasNext()) {
+			Map.Entry<String, MarketTradeDetailData> entry = (Map.Entry<String, MarketTradeDetailData>) iter.next();
+			MarketTradeDetailData val = entry.getValue();
+			result.add(val.copy());
+		}
+		return result;
+	}
+	
+	
 	/**
 	 * 填充所有所有合约的信息，在行情启动的时候接收
 	 * 

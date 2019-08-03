@@ -68,6 +68,8 @@ public class MarketWebSocket {
 	public void onClose(Session session) {
 		m_wsSenManager.removeWebSocket(getId());
 		m_subDataManager.removeCallBackDepth(getId());
+		m_subDataManager.removeCallBackKLine(getId());
+		m_subDataManager.removeCallBackTick(getId());
 	}
 
 	@OnMessage
@@ -101,6 +103,8 @@ public class MarketWebSocket {
 	public void onError(Session session, Throwable error) {
 		m_wsSenManager.removeWebSocket(getId());
 		m_subDataManager.removeCallBackDepth(getId());
+		m_subDataManager.removeCallBackKLine(getId());
+		m_subDataManager.removeCallBackTick(getId());
 	}
 
 	/**

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import com.gaia.autotrade.owsock.manager.MarketDataManager;
 import com.gaia.autotrade.owsock.market_bean.MarketDepthData;
 import com.gaia.autotrade.owsock.market_bean.MarketTickDetailData;
+import com.gaia.autotrade.owsock.market_bean.MarketTradeDetailData;
 import com.gaia.autotrade.ws.bean.KLinePushTick;
 import com.gaia.autotrade.ws.bean.SubDataBean;
 import com.gaia.autotrade.ws.bean.SubKLineData;
@@ -31,6 +32,8 @@ public class WebSocketSubManager {
 	private ConcurrentHashMap<String, ConcurrentHashMap<String, SubDataBean>> m_depthDataCallBackSubMap = new ConcurrentHashMap<String, ConcurrentHashMap<String, SubDataBean>>();
 	// Tick数据订阅集合 (即到即发)
 	private ConcurrentHashMap<String, ConcurrentHashMap<String, SubDataBean>> m_tickDataCallBackSubMap = new ConcurrentHashMap<String, ConcurrentHashMap<String, SubDataBean>>();
+	// Trade数据订阅集合 (即到即发)
+	private ConcurrentHashMap<String, ConcurrentHashMap<String, SubDataBean>> m_tradeDataCallBackSubMap = new ConcurrentHashMap<String, ConcurrentHashMap<String, SubDataBean>>();
 	// KLine数据订阅者集合(即到即发)
 	private ConcurrentHashMap<Integer, ConcurrentHashMap<String, SubKLineData>> m_klineDataCallBackSubMap = new ConcurrentHashMap<Integer, ConcurrentHashMap<String, SubKLineData>>();
 	// KLine数据请求者集合(即到即发)
@@ -200,6 +203,48 @@ public class WebSocketSubManager {
 		}
 		return true;
 	}
+	
+	// 删除Tick订阅
+	public boolean removeCallBackTick(String sid) {
+		Iterator<Entry<String, ConcurrentHashMap<String, SubDataBean>>> iter = m_tickDataCallBackSubMap.entrySet().iterator();
+		while (iter.hasNext()) {
+			Entry<String, ConcurrentHashMap<String, SubDataBean>> entry = iter.next();
+			ConcurrentHashMap<String, SubDataBean> subMap = entry.getValue();
+			subMap.remove(sid);
+		}
+		return true;
+	}
+	
+	// 添加Trade订阅
+	public boolean putCallBackTrade(SubDataBean bean) {
+		if (m_tradeDataCallBackSubMap.containsKey(bean.getPair())) {
+			ConcurrentHashMap<String, SubDataBean> queue = m_tradeDataCallBackSubMap.get(bean.getPair());
+			queue.put(bean.getSid(), bean);
+		} else {
+			ConcurrentHashMap<String, SubDataBean> map = new ConcurrentHashMap<String, SubDataBean>();
+			map.put(bean.getSid(), bean);
+			m_tradeDataCallBackSubMap.put(bean.getPair(), map);
+		}
+		// 添加订阅的同时推送一笔最新数据
+		MarketTradeDetailData data = m_marketDataManager.getTradeData(bean.getPair());
+		m_marketDataPusher.addTradePushPair(data);
+		return true;
+	}
+	
+	
+	// 获取TRade订阅者集合(浅克隆)
+	public Map<String, SubDataBean> getAllCallBackTradeByNoCopy(String pair) {
+		if (m_tradeDataCallBackSubMap.containsKey(pair)) {
+			ConcurrentHashMap<String, SubDataBean> result = new ConcurrentHashMap<String, SubDataBean>();
+			ConcurrentHashMap<String, SubDataBean> queue = m_tradeDataCallBackSubMap.get(pair);
+			result.putAll(queue);
+			return result;
+		} else {
+			return null;
+		}
+	}
+	
+
 
 	// 获取KLine订阅者集合(深克隆)
 	public Map<String, SubKLineData> getAllCallBackKLine(Integer key) {
@@ -265,7 +310,6 @@ public class WebSocketSubManager {
 		}
 		return true;
 	}
-	
 
 	// 根据sid删除KLine订阅者
 	public boolean removeCallBackKLine(String sid) {
