@@ -23,12 +23,13 @@ public class SubKLineData {
 	// 结束日期
 	public double m_endDate;
 	
+	
 	public SubKLineData copy() {
 		SubKLineData subKLineData = new SubKLineData();
-		subKLineData.m_sid = new String(this.m_sid);
-		subKLineData.m_topic = new String(this.m_topic);
-		subKLineData.m_code = new String(this.m_code);
-		subKLineData.m_lowCode = new String(this.m_lowCode);
+		subKLineData.m_sid = this.m_sid;
+		subKLineData.m_topic = this.m_topic;
+		subKLineData.m_code = this.m_code;
+		subKLineData.m_lowCode = this.m_lowCode;
 		subKLineData.m_cycle = this.m_cycle;
 		subKLineData.m_size = this.m_size;
 		subKLineData.m_subscription = this.m_subscription;
@@ -49,10 +50,8 @@ public class SubKLineData {
 		this.m_endDate = data.m_endDate;
 	}
 	
-	
-	
 	public String getKey() {
-		String key = m_code + m_lowCode + m_cycle + m_size + m_subscription + m_type + m_startDate + m_endDate;
+		String key = m_code + m_lowCode + m_cycle + m_subscription + m_type + m_startDate + m_endDate;
 		return key;
 	}
 	

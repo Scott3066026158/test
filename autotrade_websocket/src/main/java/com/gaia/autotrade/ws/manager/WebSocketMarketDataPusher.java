@@ -16,6 +16,7 @@ import com.gaia.autotrade.owsock.market_bean.MarketTradeDetailData;
 import com.gaia.autotrade.owsock.service.QuoteService;
 import com.gaia.autotrade.ws.base.MarketWebSocket;
 import com.gaia.autotrade.ws.bean.DepthPushTick;
+import com.gaia.autotrade.ws.bean.KLineCallBackData;
 import com.gaia.autotrade.ws.bean.KLinePushTick;
 import com.gaia.autotrade.ws.bean.ResponseMsg;
 import com.gaia.autotrade.ws.bean.SubDataBean;
@@ -33,7 +34,7 @@ public class WebSocketMarketDataPusher {
 	private TickPushThread m_tickPushThread = new TickPushThread(this);
 
 	// Trade数据订阅推送线程
-	private TickPushThread m_tradePushThread = new TickPushThread(this);
+	private TradePushThread m_tradePushThread = new TradePushThread(this);
 	
 	// KLine数据订阅推送线程
 	private KLinePushThread m_klinePushThread = new KLinePushThread(this);
@@ -47,8 +48,11 @@ public class WebSocketMarketDataPusher {
 	// Trade数据推送列表
 	private List<MarketTradeDetailData> m_tradePushList = new ArrayList<MarketTradeDetailData>();
 	
-	// KLine数据推送列表
-	private List<MarketKLineData> m_klinePushList = new ArrayList<MarketKLineData>();
+	// KLine订阅推送数据推送列表
+	private List<KLineCallBackData> m_klineSubPushList = new ArrayList<KLineCallBackData>();
+	
+	// KLine请求数据推送列表
+	private List<KLineCallBackData> m_klineReqPushList = new ArrayList<KLineCallBackData>();
 
 	// 订阅者管理器
 	protected WebSocketSubManager m_subDataManager;
@@ -103,16 +107,29 @@ public class WebSocketMarketDataPusher {
 		return list;
 	}
 
-	// 推送深度数据
-	public synchronized void addKLinePushPair(MarketKLineData pushDepthData) {
-		m_klinePushList.add(pushDepthData);
+	// 推送KLine数据
+	public synchronized void addKLinePushPair(KLineCallBackData pushDepthData) {
+		m_klineSubPushList.add(pushDepthData);
 	}
 
-	// 获取需要推送的深度数据
-	protected synchronized ArrayList<MarketKLineData> getKLinePushPair() {
-		ArrayList<MarketKLineData> list = new ArrayList<MarketKLineData>();
-		list.addAll(m_klinePushList);
-		m_klinePushList.clear();
+	// 获取需要推送的KLine数据
+	protected synchronized ArrayList<KLineCallBackData> getKLinePushPair() {
+		ArrayList<KLineCallBackData> list = new ArrayList<KLineCallBackData>();
+		list.addAll(m_klineSubPushList);
+		m_klineSubPushList.clear();
+		return list;
+	}
+	
+	// 推送KLine数据
+	public synchronized void addKLineReqPushPair(KLineCallBackData pushDepthData) {
+		m_klineReqPushList.add(pushDepthData);
+	}
+
+	// 获取需要推送的KLine数据
+	protected synchronized ArrayList<KLineCallBackData> getKLineReqPushPair() {
+		ArrayList<KLineCallBackData> list = new ArrayList<KLineCallBackData>();
+		list.addAll(m_klineReqPushList);
+		m_klineReqPushList.clear();
 		return list;
 	}
 
@@ -247,12 +264,12 @@ class TickPushThread extends Thread {
 		while (true) {
 			try {
 				// 获取推送的Tick数据
-				List<MarketTickDetailData> depthTickList = pusher.getTickPushPair();
-				if (depthTickList.size() == 0) {
+				List<MarketTickDetailData> tickList = pusher.getTickPushPair();
+				if (tickList.size() == 0) {
 					Thread.sleep(1000);
 					continue;
 				}
-				for (MarketTickDetailData data : depthTickList) {
+				for (MarketTickDetailData data : tickList) {
 					Map<String, SubDataBean> subMap = pusher.m_subDataManager.getAllCallBackTickByNoCopy(data.m_lowCode);
 					if (subMap == null) {
 						System.out.println("交易对子:" + data.m_code + "暂时无人订阅Tick数据!");
@@ -319,13 +336,13 @@ class TradePushThread extends Thread {
 	public void run() {
 		while (true) {
 			try {
-				// 获取推送的深度数据
-				List<MarketTradeDetailData> depthTickList = pusher.getTradePushPair();
-				if (depthTickList.size() == 0) {
+				// 获取推送的Trade数据
+				List<MarketTradeDetailData> tradeList = pusher.getTradePushPair();
+				if (tradeList.size() == 0) {
 					Thread.sleep(1000);
 					continue;
 				}
-				for (MarketTradeDetailData data : depthTickList) {
+				for (MarketTradeDetailData data : tradeList) {
 					Map<String, SubDataBean> subMap = pusher.m_subDataManager.getAllCallBackTickByNoCopy(data.m_pair);
 					if (subMap == null) {
 						System.out.println("交易对子:" + data.m_pair + "暂时无人订阅Trade数据!");
@@ -354,7 +371,6 @@ class TradePushThread extends Thread {
 	// 对于每一笔行情，此对象只需要一个
 	public ResponseMsg generateResponseMsg(MarketTradeDetailData data, SubDataBean bean) {
 		long timestamp = System.currentTimeMillis();
-		long timesecond = timestamp / 1000;
 
 		TradePushTick tick = new TradePushTick();
 		tick.setAmount(data.m_amount);
@@ -388,57 +404,57 @@ class KLinePushThread extends Thread {
 		while (true) {
 			try {
 				// 获取推送的KLine数据
-				List<MarketKLineData> klineDataList = pusher.getKLinePushPair();
-				if (klineDataList.size() == 0) {
+				List<KLineCallBackData> klineDataList = pusher.getKLinePushPair();
+				List<KLineCallBackData> klineReqDataList = pusher.getKLineReqPushPair();
+				if (klineDataList.size() == 0 && klineReqDataList.size() == 0) {
 					Thread.sleep(1000);
 					continue;
 				}
-				
-				//重新请求订阅
-				SubKLineData reqData = new SubKLineData();
-				for (MarketKLineData data : klineDataList) {
-					//当此字段为0时，标识此KLine是请求信息
-					if(data.m_subKLineData.m_subscription == 0) {
-						SubKLineData subdata = pusher.m_subDataManager.getCallBackKLineReq(data.m_subKLineData.hashCode());
-						MarketWebSocket sen = pusher.m_wsSenManager.getWebSocket(subdata.m_sid);
-						ResponseMsg msg = generateResponseMsg(data, subdata);
-						String result = sen.sendMsg(msg);
-						if (result == null) {
-							System.out.println(WebSocketMarketDataPusher.class.getName() + "KLine数据推送失败");
-						} else {
-							System.out.println("KLine数据推送成功:" + result);
-						}
-						pusher.m_subDataManager.removeCallBackKLineReq(data.m_subKLineData.hashCode());
+				for(KLineCallBackData data : klineReqDataList) {
+					SubKLineData subdata = pusher.m_subDataManager.getCallBackKLineReq(data.hashCode());
+					MarketWebSocket sen = pusher.m_wsSenManager.getWebSocket(subdata.m_sid);
+					ResponseMsg msg = generateResponseMsg(data, subdata);
+					String result = sen.sendMsg(msg);
+					if (result == null) {
+						System.out.println(WebSocketMarketDataPusher.class.getName() + "KLine数据推送失败");
+					} else {
+						System.out.println("KLine数据推送成功:" + result);
 					}
-					// 此字段不为0时则标识此为订阅请求
-					else {
-						Map<String, SubKLineData> subMap = pusher.m_subDataManager.getAllCallBackKLineByNoCopy(data.m_subKLineData.hashCode());
-						if (subMap == null) {
-							System.out.println("hashCode:" + data.m_subKLineData.hashCode() + "暂时无人订阅KLine数据!");
-							continue;
+					pusher.m_subDataManager.removeCallBackKLineReq(data.hashCode());
+				}
+				
+				for (KLineCallBackData data : klineDataList) {
+					Map<String, SubKLineData> subMap = pusher.m_subDataManager.getAllCallBackKLineByNoCopy(data.hashCode());
+					if (subMap == null) {
+						System.out.println("hashCode:" + data.hashCode() + "暂时无人订阅KLine数据!");
+						continue;
+					}
+					SubKLineData subData = null;
+					Iterator<Map.Entry<String, SubKLineData>> iter = subMap.entrySet().iterator();
+					while (iter.hasNext()) {
+						Map.Entry<String, SubKLineData> entry = iter.next();
+						subData = entry.getValue();
+						MarketWebSocket sen = pusher.m_wsSenManager.getWebSocket(subData.m_sid);
+						if(data.getDatas().size() == 0) {
+							MarketKLineData newData = new MarketKLineData();
+							data.getDatas().add(newData);
 						}
-						Iterator<Map.Entry<String, SubKLineData>> iter = subMap.entrySet().iterator();
-						while (iter.hasNext()) {
-							Map.Entry<String, SubKLineData> entry = iter.next();
-							SubKLineData subData = entry.getValue();
-							MarketWebSocket sen = pusher.m_wsSenManager.getWebSocket(subData.m_sid);
-							ResponseMsg msg = generateResponseMsg(data, subData);
+						for(MarketKLineData klineData : data.getDatas()) {
+							ResponseMsg msg = generateResponseMsg(klineData, subData);
 							String result = sen.sendMsg(msg);
 							if (result == null) {
 								System.out.println(WebSocketMarketDataPusher.class.getName() + "KLine数据推送失败");
 							} else {
 								System.out.println("KLine数据推送成功:" + result);
 							}
-							reqData.copySubData(subData);
 						}
+						
 					}
 				}
-				while(true) {
-					if( pusher.m_quoteService.GetHistoryDatas(reqData) > 0){
-						break;
-					}else {
-						Thread.sleep(3000);
-					}
+				List<SubKLineData> reqList = pusher.m_subDataManager.getKLineSubList();
+				for(SubKLineData data : reqList) {
+					System.out.println("==");
+					pusher.m_quoteService.GetHistoryDatas(data);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -465,6 +481,30 @@ class KLinePushThread extends Thread {
 		msg.setCh(bean.m_topic);
 		msg.setTs(timestamp);
 		msg.setTick(tick);
+		return msg;
+	}
+	
+	// 此方法需要优化，对于每一笔行情，此对象只需要一个
+	public ResponseMsg generateResponseMsg(KLineCallBackData callbackData, SubKLineData bean) {
+		long timestamp = System.currentTimeMillis();
+		long timesecond = timestamp / 1000;
+		ArrayList<KLinePushTick> list = new ArrayList<KLinePushTick>();
+		for(MarketKLineData data : callbackData.getDatas()) {
+			KLinePushTick tick = new KLinePushTick();
+			tick.setId(timesecond);
+			tick.setOpen(data.m_open);
+			tick.setClose(data.m_close);
+			tick.setLow(data.m_low);
+			tick.setHigh(data.m_high);
+			tick.setAmount(data.m_amount);
+			tick.setVol(data.m_volume);
+			tick.setCount(1);
+			list.add(tick);
+		}
+		ResponseMsg msg = new ResponseMsg();
+		msg.setCh(bean.m_topic);
+		msg.setTs(timestamp);
+		msg.setTick(list);
 		return msg;
 	}
 

@@ -22,7 +22,6 @@ public class Config {
 
 	@Bean
 	public ServerEndpointExporter serverEndpointExporter() {
-		System.out.println(this.getClass().getName());
 		return new ServerEndpointExporter();
 	}
 

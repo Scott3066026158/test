@@ -3,31 +3,38 @@ package com.gaia.autotrade.http.bean;
 import com.alibaba.fastjson.annotation.JSONField;
 
 public class JsonMessage {
-	@JSONField(name = "status")
 	private String status;
-	@JSONField(name = "ch")
 	private String ch;
-	@JSONField(name = "ts")
 	private Long ts;
-	@JSONField(name = "data")
 	private Object data;
-	@JSONField(name = "err-code")
 	private String errCode;
-	@JSONField(name = "err-msg")
 	private String errMsg;
+	private String code;
+	
+	public String getCode() {
+		return code;
+	}
+	
+	@JSONField(name = "code")
+	public void setCode(String code) {
+		this.code = code;
+	}
 
 	public String getStatus() {
 		return status;
 	}
 
+	@JSONField(name = "status")
 	public void setStatus(String status) {
 		this.status = status;
 	}
+
 
 	public String getCh() {
 		return ch;
 	}
 
+	@JSONField(name = "ch")
 	public void setCh(String ch) {
 		this.ch = ch;
 	}
@@ -36,6 +43,7 @@ public class JsonMessage {
 		return ts;
 	}
 
+	@JSONField(name = "ts")
 	public void setTs(Long ts) {
 		this.ts = ts;
 	}
@@ -44,6 +52,7 @@ public class JsonMessage {
 		return data;
 	}
 
+	@JSONField(name = "data")
 	public void setData(Object data) {
 		this.data = data;
 	}
@@ -52,6 +61,7 @@ public class JsonMessage {
 		return errCode;
 	}
 
+	@JSONField(name = "err-code")
 	public void setErrCode(String errCode) {
 		this.errCode = errCode;
 	}
@@ -60,6 +70,7 @@ public class JsonMessage {
 		return errMsg;
 	}
 
+	@JSONField(name = "err-msg")
 	public void setErrMsg(String errMsg) {
 		this.errMsg = errMsg;
 	}

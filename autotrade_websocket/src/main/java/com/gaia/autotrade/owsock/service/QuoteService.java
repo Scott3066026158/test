@@ -17,9 +17,11 @@ import com.gaia.autotrade.owsock.market_bean.LatestDataInfo;
 import com.gaia.autotrade.owsock.market_bean.MarketDepthData;
 import com.gaia.autotrade.owsock.market_bean.MarketKLineData;
 import com.gaia.autotrade.owsock.market_bean.MarketTickDetailData;
+import com.gaia.autotrade.owsock.market_bean.MarketTradeDetailData;
 import com.gaia.autotrade.owsock.market_bean.MarketUserInfo;
 import com.gaia.autotrade.owsock.market_bean.SecurityInfo;
 import com.gaia.autotrade.owsock.market_bean.SecurityLatestDataTiny;
+import com.gaia.autotrade.ws.bean.KLineCallBackData;
 import com.gaia.autotrade.ws.bean.SubKLineData;
 
 @Component
@@ -30,7 +32,9 @@ public class QuoteService extends BaseService {
 	// 获取行情用户信息
 	private MarketUserInfo m_userInfo = m_marketDataManager.getMarketUserInfo();
 	// 为了快速，先定死requestID
-	private int m_requestID = 123456;
+	private int m_depthRequestID = 123456;
+	// 为了快速，先定死requestID
+	private int m_tickRequestID = 123457;
 
 	public static final int FUNCTIONID_MD_PUSHDATA = 0;
 	public static final int FUNCTIONID_MD_PUSHDATATINY = 1;
@@ -63,7 +67,6 @@ public class QuoteService extends BaseService {
 	}
 
 	public void OnReceive(CMessage message) {
-		System.out.println("收到行情数据!functionID:" + message.m_functionID);
 		Binary binary = new Binary();
 		binary.Write(message.m_body, message.m_bodyLength);
 		switch (message.m_functionID) {
@@ -97,16 +100,10 @@ public class QuoteService extends BaseService {
 	}
 
 	private void RevPushKLine(Binary binary) {
-		SubKLineData dataInfo = new SubKLineData();
-		ArrayList<MarketKLineData> datas = new ArrayList<MarketKLineData>();
-		GetHistoryDatas(dataInfo, datas, binary);
-		if(datas.size() == 0) {
-			MarketKLineData data = new MarketKLineData();
-			datas.add(data);
-		}
-		for(MarketKLineData data : datas) {
-			m_marketDataManager.putKLineData(data);
-		}
+		KLineCallBackData klineSubData = new KLineCallBackData();
+		
+		GetHistoryDatas(klineSubData, binary);
+		m_marketDataManager.putKLineData(klineSubData);
 	}
 
 	private void RevPushDataTiny(Binary binary) {
@@ -147,6 +144,9 @@ public class QuoteService extends BaseService {
 		MarketTickDetailData tickData = new MarketTickDetailData();
 		tickData.coinNewDataToMarketTickData(data);
 		m_marketDataManager.putTickData(tickData);
+		MarketTradeDetailData tradeData = new MarketTradeDetailData();
+		tradeData.tickToTradeDetailData(tickData);
+		m_marketDataManager.putTradeData(tradeData);
 	}
 
 	private void RevDepthData(CoinNewData data) {
@@ -221,7 +221,7 @@ public class QuoteService extends BaseService {
 
 	// 请求历史数据
 	public int GetHistoryDatas(SubKLineData dataInfo) {
-		return Send(FUNCTIONID_MD_GETHISTORYDATA, m_requestID, GetSocketID(), dataInfo) > 0 ? 1 : 0;
+		return Send(FUNCTIONID_MD_GETHISTORYDATA, m_depthRequestID, GetSocketID(), dataInfo) > 0 ? 1 : 0;
 	}
 
 	/**
@@ -343,8 +343,11 @@ public class QuoteService extends BaseService {
 	 * @param bodyLength 包体长度
 	 * @return 状态
 	 */
-	public static int GetHistoryDatas(SubKLineData dataInfo, ArrayList<MarketKLineData> datas, Binary binary) {
+	public static int GetHistoryDatas(KLineCallBackData klineSubData, Binary binary) {
 		try {
+			SubKLineData dataInfo = new  SubKLineData();
+			ArrayList<MarketKLineData> datas = new ArrayList<MarketKLineData>();
+			
 			dataInfo.m_code = binary.ReadString();
 			dataInfo.m_lowCode = dataInfo.m_code.replace("/", "").toLowerCase();
 			dataInfo.m_type = (int) binary.ReadChar();
@@ -367,10 +370,11 @@ public class QuoteService extends BaseService {
 				if (dataInfo.m_cycle == 0) {
 					data.m_avgPrice = binary.ReadDouble();
 				}
-				data.m_subKLineData = dataInfo.copy();
 				datas.add(data);
 			}
 			binary.Close();
+			klineSubData.setDatas(datas);
+			klineSubData.setSubData(dataInfo);
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -594,8 +598,8 @@ public class QuoteService extends BaseService {
 		LatestDataInfo dataInfo = new LatestDataInfo();
 		dataInfo.m_codes = codes;
 		dataInfo.m_format = 1;
-		StopPushLatestDepthDatas(m_requestID);
-		PushLatestDatas(m_requestID, dataInfo);
+		StopPushLatestDepthDatas(m_depthRequestID);
+		PushLatestDatas(m_depthRequestID, dataInfo);
 	}
 
 	/**
@@ -605,8 +609,8 @@ public class QuoteService extends BaseService {
 		LatestDataInfo dataInfo = new LatestDataInfo();
 		dataInfo.m_codes = codes;
 		dataInfo.m_format = 0;
-		StopPushLatestDepthDatas(m_requestID);
-		PushLatestDatas(m_requestID, dataInfo);
+		StopPushLatestDepthDatas(m_tickRequestID);
+		PushLatestDatas(m_tickRequestID, dataInfo);
 	}
 
 	/**
@@ -619,7 +623,7 @@ public class QuoteService extends BaseService {
 		LatestDataInfo dataInfo = new LatestDataInfo();
 		dataInfo.m_codes = codes;
 		dataInfo.m_format = 1;
-		StopPushLatestDepthDatas(m_requestID);
+		StopPushLatestDepthDatas(m_depthRequestID);
 	}
 
 	/**
@@ -632,7 +636,7 @@ public class QuoteService extends BaseService {
 		LatestDataInfo dataInfo = new LatestDataInfo();
 		dataInfo.m_codes = codes;
 		dataInfo.m_format = 0;
-		StopPushLatestDepthDatas(m_requestID);
+		StopPushLatestDepthDatas(m_depthRequestID);
 	}
 
 }

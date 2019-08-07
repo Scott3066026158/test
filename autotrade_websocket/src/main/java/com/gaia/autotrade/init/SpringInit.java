@@ -24,12 +24,13 @@ public class SpringInit implements InitializingBean {
 	}
 
 	public void Connect() {
+		String url = "allinex.io:5002";
 		BaseService.AddService(m_quoteService);
-		int quoteSocket = m_quoteService.ConnectServer("ss.gaiafintech.com:13334");
+		int quoteSocket = m_quoteService.ConnectServer(url);
 		if (quoteSocket < 0) {
-			System.out.println("连接失败!");
+			System.out.println("连接失败，url:" + url);
 		} else {
-			System.out.println("连接成功!");
+			System.out.println("连接成功，url:" + url);
 		}
 	}
 

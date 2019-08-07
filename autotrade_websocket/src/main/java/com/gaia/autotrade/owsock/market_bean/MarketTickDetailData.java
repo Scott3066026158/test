@@ -1,5 +1,7 @@
 package com.gaia.autotrade.owsock.market_bean;
 
+import com.gaia.autotrade.ws.bean.TickDetailPushTick;
+
 public class MarketTickDetailData {
 	// 24小时成交额
 	public double m_tradeAmountIn24Hour;
@@ -93,5 +95,19 @@ public class MarketTickDetailData {
 		data.m_tradeDay = new String(this.m_tradeDay);
 		data.m_tradeTime = new String(this.m_tradeTime);
 		return this;
+	}
+	
+	public TickDetailPushTick copyToTickDetail(){
+		TickDetailPushTick data = new TickDetailPushTick();
+		data.setTs((int)this.m_date);
+		data.setAmount(this.m_tradeVolIn24Hour);
+		data.setClose(this.m_close);
+		data.setCount(0);
+		data.setHigh(this.m_topPriceIn24Hour);
+		data.setId(0);
+		data.setLow(this.m_floorPriceIn24Hour);
+		data.setOpen(this.m_preClose);
+		data.setVol(this.m_tradeAmountIn24Hour);
+		return data;
 	}
 }

@@ -1,13 +1,10 @@
 package com.gaia.autotrade.owsock.market_bean;
 
-import com.gaia.autotrade.ws.bean.SubKLineData;
-
 public class MarketKLineData {
 
 	public MarketKLineData() {
 	}
 
-	public SubKLineData m_subKLineData;
 	public double m_avgPrice;
 	public double m_date;
 	public double m_open;
@@ -20,7 +17,6 @@ public class MarketKLineData {
 	public double m_amount;
 
 	public void copy(MarketKLineData data) {
-		m_subKLineData = data.m_subKLineData;
 		m_avgPrice = data.m_avgPrice;
 		m_date = data.m_date;
 		m_open = data.m_open;
@@ -35,7 +31,6 @@ public class MarketKLineData {
 
 	public MarketKLineData copy() {
 		MarketKLineData coinData = new MarketKLineData();
-		coinData.m_subKLineData = this.m_subKLineData;
 		coinData.m_avgPrice = this.m_avgPrice;
 		coinData.m_date = this.m_date;
 		coinData.m_open = this.m_open;

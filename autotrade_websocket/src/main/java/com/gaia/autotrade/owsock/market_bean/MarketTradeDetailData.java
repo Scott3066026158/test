@@ -18,4 +18,13 @@ public class MarketTradeDetailData {
 		data.m_diretion = this.m_diretion;
 		return data;
 	}
+	
+	public void tickToTradeDetailData(MarketTickDetailData data) {
+		this.m_amount = data.m_dVolume;
+		this.m_diretion = "";
+		this.m_lowpair = data.m_lowCode;
+		this.m_pair = data.m_code;
+		this.m_price = data.m_close;
+		this.m_tradetime = data.m_date;
+	}
 }

@@ -11,6 +11,7 @@
 	<groupId>com.gaia</groupId>
 	<artifactId>autotrade</artifactId>
 	<version>1.0.0</version>
+	<packaging>jar</packaging>
 	<name>autotrade_websocket</name>
 	<description>Demo project for Spring Boot</description>
 
@@ -71,6 +72,15 @@
 		    <artifactId>commons-codec</artifactId>
 		    <version>1.9</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>owchart</groupId>
+			<artifactId>owchart</artifactId>
+			<version>1</version>
+			<scope>system</scope>
+			<systemPath>${pom.basedir}/private_lib/owchart.jar</systemPath>
+		</dependency>
+ 
         
 	</dependencies>
 
@@ -79,8 +89,12 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+				  <includeSystemScope>true</includeSystemScope>
+				</configuration>
 			</plugin>
 		</plugins>
+		
 	</build>
 
 </project>

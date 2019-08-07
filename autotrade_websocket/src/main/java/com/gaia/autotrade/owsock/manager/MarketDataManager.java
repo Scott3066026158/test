@@ -8,12 +8,11 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.gaia.autotrade.owsock.market_bean.MarketDepthData;
-import com.gaia.autotrade.owsock.market_bean.MarketKLineData;
 import com.gaia.autotrade.owsock.market_bean.MarketTickDetailData;
 import com.gaia.autotrade.owsock.market_bean.MarketTradeDetailData;
 import com.gaia.autotrade.owsock.market_bean.MarketUserInfo;
 import com.gaia.autotrade.owsock.market_bean.SecurityInfo;
-import com.gaia.autotrade.ws.bean.SubKLineData;
+import com.gaia.autotrade.ws.bean.KLineCallBackData;
 import com.gaia.autotrade.ws.manager.WebSocketMarketDataPusher;
 import com.gaia.autotrade.ws.manager.WebSocketSubManager;
 
@@ -34,7 +33,7 @@ public class MarketDataManager {
 	// 缓存Trade行情数据
 	private ConcurrentHashMap<String, MarketTradeDetailData> m_tradeDataMap = new ConcurrentHashMap<String, MarketTradeDetailData>();
 	// 缓存KLine行情数据Map<交易对子+分钟线, KLine数据>
-	private ConcurrentHashMap<Integer, MarketKLineData> m_klineDataMap = new ConcurrentHashMap<Integer, MarketKLineData>();
+	private ConcurrentHashMap<Integer, KLineCallBackData> m_klineDataMap = new ConcurrentHashMap<Integer, KLineCallBackData>();
 	// 合约信息表
 	private ConcurrentHashMap<String, SecurityInfo> m_securitiesMap = new ConcurrentHashMap<String, SecurityInfo>();
 	// 交易对子表
@@ -112,8 +111,8 @@ public class MarketDataManager {
 	 * @param pair key
 	 * @return 存在返回数据，不存在返回null
 	 */
-	public MarketKLineData getKLineData(String pairTime) {
-		MarketKLineData data = m_klineDataMap.get(pairTime);
+	public KLineCallBackData getKLineData(Integer hashCode) {
+		KLineCallBackData data = m_klineDataMap.get(hashCode);
 		return data.copy();
 	}
 
@@ -122,12 +121,12 @@ public class MarketDataManager {
 	 * 
 	 * @return 返回所有
 	 */
-	public List<MarketKLineData> getKLineDatas() {
-		ArrayList<MarketKLineData> result = new ArrayList<MarketKLineData>();
-		Iterator<Entry<Integer, MarketKLineData>> iter = m_klineDataMap.entrySet().iterator();
+	public List<KLineCallBackData> getKLineDatas() {
+		ArrayList<KLineCallBackData> result = new ArrayList<KLineCallBackData>();
+		Iterator<Entry<Integer, KLineCallBackData>> iter = m_klineDataMap.entrySet().iterator();
 		while (iter.hasNext()) {
-			Map.Entry<Integer, MarketKLineData> entry = (Map.Entry<Integer, MarketKLineData>) iter.next();
-			MarketKLineData val = entry.getValue();
+			Map.Entry<Integer, KLineCallBackData> entry = (Map.Entry<Integer, KLineCallBackData>) iter.next();
+			KLineCallBackData val = entry.getValue();
 			result.add(val.copy());
 		}
 		return result;
@@ -138,10 +137,14 @@ public class MarketDataManager {
 	 * 
 	 * @param data 最新的KLine数据
 	 */
-	public void putKLineData(MarketKLineData data) {
-		SubKLineData subData = data.m_subKLineData;
-		m_klineDataMap.put(subData.hashCode(), data);
-		m_pushDataManager.addKLinePushPair(data);
+	public void putKLineData(KLineCallBackData data) {
+		m_klineDataMap.put(data.hashCode(), data);
+		if(data.getSubData().m_subscription != 0) {
+			m_pushDataManager.addKLineReqPushPair(data);
+		}else {
+			m_pushDataManager.addKLinePushPair(data);
+		}
+		
 	}
 
 	/**

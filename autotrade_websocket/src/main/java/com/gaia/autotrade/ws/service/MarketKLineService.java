@@ -25,7 +25,7 @@ import com.gaia.autotrade.ws.manager.WebSocketSubManager;
 public class MarketKLineService extends MarketBaseService {
 
 	// 请求K线唯一标识
-	private int m_count;
+	private int m_count = 1;
 	// 行情服务
 	private QuoteService m_quoteService;
 	// 行情数据管理器
@@ -99,8 +99,19 @@ public class MarketKLineService extends MarketBaseService {
 		Map<String, Object> params = request.getParams();
 		String pair = (String)params.get("pair");
 		String param = (String)params.get("param");
-		long from = (long)params.get("from");
-		long to = (long)params.get("to");
+		long from = 0;
+		long to = 0;
+		if(!params.containsKey("from")) {
+			from = System.currentTimeMillis() / 1000 - 60;
+		}else {
+			from = (long)params.get("from");
+		}
+		
+		if(!params.containsKey("to")) {
+			to = System.currentTimeMillis() / 1000 - 60;
+		}else {
+			to =  (long)params.get("to");
+		}
 		if(CheckTime(from, to)) {
 			response.setStatus(PublicField.FAIL_STATUS);
 			response.setMsg("请检查from与to参数");
@@ -117,12 +128,10 @@ public class MarketKLineService extends MarketBaseService {
 			response.setMsg("Param：" + param + ",不是一个支持的周期参数");
 			return -1;
 		}
-		SubDataBean bean = new SubDataBean();
-		bean.setPair(pair);
-		bean.setSid(request.getSid());
-		bean.setTopic(request.getTopic());
 
 		SubKLineData subParam = new SubKLineData();
+		subParam.m_sid = request.getSid();
+		subParam.m_topic = request.getTopic();
 		subParam.m_cycle = cycle;
 		subParam.m_size = (int) ((from - to) / 60);
 		subParam.m_type = 116;
@@ -131,6 +140,7 @@ public class MarketKLineService extends MarketBaseService {
 		subParam.m_endDate = to;
 		subParam.m_lowCode = pair;
 		subParam.m_code = m_mkDataManager.getTradePair(pair);
+		
 		m_subDataManager.putCallBackKLineReq(subParam.hashCode(), subParam);
 		
 		if(m_quoteService.GetHistoryDatas(subParam) < 0) {

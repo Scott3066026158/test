@@ -76,7 +76,7 @@ public class ReqController extends WebSocketController {
 			request.setServiceName(serviceName);
 			request.setTopic(req);
 			request.setParams(map);
-
+			request.setSid(msg.getString("sid"));
 			WebSocketServletResponse response = new WebSocketServletResponse();
 			response.setTimestamp(getServerTime());
 			response.setParamID(id);
@@ -84,6 +84,7 @@ public class ReqController extends WebSocketController {
 			response.setStatus(PublicField.FAIL_STATUS);
 			response.setMsg("服务器未接收处理");
 			response.setData(null);
+			response.setSid(msg.getString("sid"));
 			service.RevWsReq(request, response);
 
 			return convertWebSocketServletResponse(response);
@@ -114,7 +115,8 @@ public class ReqController extends WebSocketController {
 	public ResponseMsg convertWebSocketServletResponse(WebSocketServletResponse response) {
 		if (response.getStatus() == PublicField.SUCCESSFUL_STATUS) {
 			ResponseMsg msg = new ResponseMsg();
-			msg.setSubbed(response.getRequestParms());
+			msg.setCh(response.getRequestParms());
+			msg.setTick(response.getData());
 			msg.setTs(response.getTimestamp());
 			msg.setId(response.getParamID());
 			msg.setStatus(response.getStatus());

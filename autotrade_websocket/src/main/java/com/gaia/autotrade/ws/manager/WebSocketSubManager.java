@@ -1,8 +1,11 @@
 package com.gaia.autotrade.ws.manager;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +15,6 @@ import com.gaia.autotrade.owsock.manager.MarketDataManager;
 import com.gaia.autotrade.owsock.market_bean.MarketDepthData;
 import com.gaia.autotrade.owsock.market_bean.MarketTickDetailData;
 import com.gaia.autotrade.owsock.market_bean.MarketTradeDetailData;
-import com.gaia.autotrade.ws.bean.KLinePushTick;
 import com.gaia.autotrade.ws.bean.SubDataBean;
 import com.gaia.autotrade.ws.bean.SubKLineData;
 
@@ -262,6 +264,22 @@ public class WebSocketSubManager {
 			return null;
 		}
 	}
+	
+	// 获取所有订阅者
+	public List<SubKLineData> getKLineSubList(){
+		List<SubKLineData> result = new ArrayList<SubKLineData>();
+		Iterator<Map.Entry<Integer, ConcurrentHashMap<String, SubKLineData>>> iter = m_klineDataCallBackSubMap.entrySet().iterator();
+		while (iter.hasNext()) {
+			Entry<Integer, ConcurrentHashMap<String, SubKLineData>> entry = iter.next();
+			Iterator<Entry<String, SubKLineData>> subMap = entry.getValue().entrySet().iterator();
+			while(subMap.hasNext()) {
+				SubKLineData data = subMap.next().getValue();
+				result.add(data);
+				break;
+			}
+		}
+		return result;
+	}
 
 	// 获取KLine订阅者集合(浅克隆)
 	public Map<String, SubKLineData> getAllCallBackKLineByNoCopy(Integer key) {
@@ -336,7 +354,11 @@ public class WebSocketSubManager {
 	
 	//K线请求者
 	public SubKLineData getCallBackKLineReq(Integer hashKey) {
-		return m_klineDataCallBackReqMap.get(hashKey).copy();
+		SubKLineData data = m_klineDataCallBackReqMap.get(hashKey);
+		if(data == null) {
+			return null;
+		}
+		return data.copy();
 	}
 	
 }

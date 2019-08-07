@@ -10,8 +10,9 @@ public class SpotApiKeyController {
 
 	@RequestMapping(value = "/open/api_key/create", method = RequestMethod.POST)
 	public String createApiKey(@RequestParam(value = "username", required = true) String username,
-			@RequestParam(value = "remark", required = true) String remark,
+			@RequestParam(value = "traderid", required = true) String traderid,
 			@RequestParam(value = "privilege", required = true) String privilege,
+			@RequestParam(value = "remark", required = false) String remark,
 			@RequestParam(value = "ipgroup", required = false) String ipgroup) {
 
 		return null;
