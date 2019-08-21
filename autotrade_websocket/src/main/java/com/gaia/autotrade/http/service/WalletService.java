@@ -1,4 +1,4 @@
-package com.gaia.autotrade.http.spot_service;
+package com.gaia.autotrade.http.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.gaia.autotrade.owsock.service.TradeService;
 
 @Service
-public class SpotWalletService {
+public class WalletService {
 
 	private TradeService m_tradeService = TradeService.getInstance();
 

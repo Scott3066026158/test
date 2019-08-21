@@ -96,10 +96,10 @@ public class MarketTickDetailData {
 		data.m_tradeTime = new String(this.m_tradeTime);
 		return this;
 	}
-	
-	public TickDetailPushTick copyToTickDetail(){
+
+	public TickDetailPushTick copyToTickDetail() {
 		TickDetailPushTick data = new TickDetailPushTick();
-		data.setTs((int)this.m_date);
+		data.setTs((int) this.m_date);
 		data.setAmount(this.m_tradeVolIn24Hour);
 		data.setClose(this.m_close);
 		data.setCount(0);

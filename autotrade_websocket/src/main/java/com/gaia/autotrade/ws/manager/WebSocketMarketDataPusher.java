@@ -35,7 +35,7 @@ public class WebSocketMarketDataPusher {
 
 	// Trade数据订阅推送线程
 	private TradePushThread m_tradePushThread = new TradePushThread(this);
-	
+
 	// KLine数据订阅推送线程
 	private KLinePushThread m_klinePushThread = new KLinePushThread(this);
 
@@ -44,13 +44,13 @@ public class WebSocketMarketDataPusher {
 
 	// Tick数据推送列表
 	private List<MarketTickDetailData> m_tickPushList = new ArrayList<MarketTickDetailData>();
-	
+
 	// Trade数据推送列表
 	private List<MarketTradeDetailData> m_tradePushList = new ArrayList<MarketTradeDetailData>();
-	
+
 	// KLine订阅推送数据推送列表
 	private List<KLineCallBackData> m_klineSubPushList = new ArrayList<KLineCallBackData>();
-	
+
 	// KLine请求数据推送列表
 	private List<KLineCallBackData> m_klineReqPushList = new ArrayList<KLineCallBackData>();
 
@@ -59,10 +59,10 @@ public class WebSocketMarketDataPusher {
 
 	// Ws会话管理器
 	protected WebSocketSessionManager m_wsSenManager;
-	
+
 	// 行情服务
 	protected QuoteService m_quoteService;
-	
+
 	@Autowired
 	private void setQuoteService(QuoteService quoteService) {
 		m_quoteService = quoteService;
@@ -93,7 +93,7 @@ public class WebSocketMarketDataPusher {
 		m_tickPushList.clear();
 		return list;
 	}
-	
+
 	// 推送Trade数据
 	public synchronized void addTradePushPair(MarketTradeDetailData pushPair) {
 		m_tradePushList.add(pushPair);
@@ -119,7 +119,7 @@ public class WebSocketMarketDataPusher {
 		m_klineSubPushList.clear();
 		return list;
 	}
-	
+
 	// 推送KLine数据
 	public synchronized void addKLineReqPushPair(KLineCallBackData pushDepthData) {
 		m_klineReqPushList.add(pushDepthData);
@@ -179,7 +179,6 @@ class DepthPushThread extends Thread {
 					Map<String, SubDataBean> subMap = pusher.m_subDataManager
 							.getAllCallBackDepthByNoCopy(data.m_lowCode);
 					if (subMap == null) {
-						System.out.println("交易对子:" + data.m_code + "暂时无人订阅Depth数据!");
 						continue;
 					}
 					Iterator<Map.Entry<String, SubDataBean>> iter = subMap.entrySet().iterator();
@@ -270,9 +269,9 @@ class TickPushThread extends Thread {
 					continue;
 				}
 				for (MarketTickDetailData data : tickList) {
-					Map<String, SubDataBean> subMap = pusher.m_subDataManager.getAllCallBackTickByNoCopy(data.m_lowCode);
+					Map<String, SubDataBean> subMap = pusher.m_subDataManager
+							.getAllCallBackTickByNoCopy(data.m_lowCode);
 					if (subMap == null) {
-						System.out.println("交易对子:" + data.m_code + "暂时无人订阅Tick数据!");
 						continue;
 					}
 					Iterator<Map.Entry<String, SubDataBean>> iter = subMap.entrySet().iterator();
@@ -309,7 +308,7 @@ class TickPushThread extends Thread {
 		tick.setHigh(data.m_topPriceIn24Hour);
 		tick.setId(timesecond);
 		tick.setLow(data.m_floorPriceIn24Hour);
-		//24小时开盘价
+		// 24小时开盘价
 		tick.setOpen(data.m_preClose);
 		tick.setVol(data.m_tradeAmountIn24Hour);
 		ResponseMsg msg = new ResponseMsg();
@@ -345,7 +344,6 @@ class TradePushThread extends Thread {
 				for (MarketTradeDetailData data : tradeList) {
 					Map<String, SubDataBean> subMap = pusher.m_subDataManager.getAllCallBackTickByNoCopy(data.m_pair);
 					if (subMap == null) {
-						System.out.println("交易对子:" + data.m_pair + "暂时无人订阅Trade数据!");
 						continue;
 					}
 					Iterator<Map.Entry<String, SubDataBean>> iter = subMap.entrySet().iterator();
@@ -367,7 +365,7 @@ class TradePushThread extends Thread {
 			}
 		}
 	}
-	
+
 	// 对于每一笔行情，此对象只需要一个
 	public ResponseMsg generateResponseMsg(MarketTradeDetailData data, SubDataBean bean) {
 		long timestamp = System.currentTimeMillis();
@@ -375,9 +373,9 @@ class TradePushThread extends Thread {
 		TradePushTick tick = new TradePushTick();
 		tick.setAmount(data.m_amount);
 		tick.setDirection("");
-		tick.setId((int)pushCount);
+		tick.setId((int) pushCount);
 		tick.setPrice(data.m_price);
-		tick.setTs((int)timestamp);
+		tick.setTs((int) timestamp);
 		ResponseMsg msg = new ResponseMsg();
 		msg.setCh(bean.getTopic());
 		msg.setTs(timestamp);
@@ -410,7 +408,7 @@ class KLinePushThread extends Thread {
 					Thread.sleep(1000);
 					continue;
 				}
-				for(KLineCallBackData data : klineReqDataList) {
+				for (KLineCallBackData data : klineReqDataList) {
 					SubKLineData subdata = pusher.m_subDataManager.getCallBackKLineReq(data.hashCode());
 					MarketWebSocket sen = pusher.m_wsSenManager.getWebSocket(subdata.m_sid);
 					ResponseMsg msg = generateResponseMsg(data, subdata);
@@ -422,11 +420,11 @@ class KLinePushThread extends Thread {
 					}
 					pusher.m_subDataManager.removeCallBackKLineReq(data.hashCode());
 				}
-				
+
 				for (KLineCallBackData data : klineDataList) {
-					Map<String, SubKLineData> subMap = pusher.m_subDataManager.getAllCallBackKLineByNoCopy(data.hashCode());
+					Map<String, SubKLineData> subMap = pusher.m_subDataManager
+							.getAllCallBackKLineByNoCopy(data.hashCode());
 					if (subMap == null) {
-						System.out.println("hashCode:" + data.hashCode() + "暂时无人订阅KLine数据!");
 						continue;
 					}
 					SubKLineData subData = null;
@@ -435,11 +433,11 @@ class KLinePushThread extends Thread {
 						Map.Entry<String, SubKLineData> entry = iter.next();
 						subData = entry.getValue();
 						MarketWebSocket sen = pusher.m_wsSenManager.getWebSocket(subData.m_sid);
-						if(data.getDatas().size() == 0) {
+						if (data.getDatas().size() == 0) {
 							MarketKLineData newData = new MarketKLineData();
 							data.getDatas().add(newData);
 						}
-						for(MarketKLineData klineData : data.getDatas()) {
+						for (MarketKLineData klineData : data.getDatas()) {
 							ResponseMsg msg = generateResponseMsg(klineData, subData);
 							String result = sen.sendMsg(msg);
 							if (result == null) {
@@ -448,11 +446,11 @@ class KLinePushThread extends Thread {
 								System.out.println("KLine数据推送成功:" + result);
 							}
 						}
-						
+
 					}
 				}
 				List<SubKLineData> reqList = pusher.m_subDataManager.getKLineSubList();
-				for(SubKLineData data : reqList) {
+				for (SubKLineData data : reqList) {
 					System.out.println("==");
 					pusher.m_quoteService.GetHistoryDatas(data);
 				}
@@ -483,13 +481,13 @@ class KLinePushThread extends Thread {
 		msg.setTick(tick);
 		return msg;
 	}
-	
+
 	// 此方法需要优化，对于每一笔行情，此对象只需要一个
 	public ResponseMsg generateResponseMsg(KLineCallBackData callbackData, SubKLineData bean) {
 		long timestamp = System.currentTimeMillis();
 		long timesecond = timestamp / 1000;
 		ArrayList<KLinePushTick> list = new ArrayList<KLinePushTick>();
-		for(MarketKLineData data : callbackData.getDatas()) {
+		for (MarketKLineData data : callbackData.getDatas()) {
 			KLinePushTick tick = new KLinePushTick();
 			tick.setId(timesecond);
 			tick.setOpen(data.m_open);

@@ -63,7 +63,7 @@ public class ReqController extends WebSocketController {
 			}
 			map.put("pair", pair);
 			map.put("serviceKey", serviceKey);
-			
+
 			// 遍历取出其他参数
 			Iterator<Entry<String, Object>> it = msg.entrySet().iterator();
 			while (it.hasNext()) {

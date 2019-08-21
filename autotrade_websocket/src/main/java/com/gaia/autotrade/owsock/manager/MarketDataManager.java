@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.gaia.autotrade.owsock.market_bean.MarketDepthData;
 import com.gaia.autotrade.owsock.market_bean.MarketTickDetailData;
 import com.gaia.autotrade.owsock.market_bean.MarketTradeDetailData;
@@ -16,6 +19,7 @@ import com.gaia.autotrade.ws.bean.KLineCallBackData;
 import com.gaia.autotrade.ws.manager.WebSocketMarketDataPusher;
 import com.gaia.autotrade.ws.manager.WebSocketSubManager;
 
+@Component
 public class MarketDataManager {
 
 	private static MarketDataManager m_self = null;
@@ -54,11 +58,13 @@ public class MarketDataManager {
 	}
 
 	// 设置订阅者
+	@Autowired
 	public void setWebSocketSubManager(WebSocketSubManager webSocketSubManager) {
 		m_subDataManager = webSocketSubManager;
 	}
 
 	// 设置推送者
+	@Autowired
 	public void setWebSocketMarketDataPusher(WebSocketMarketDataPusher pushDataManager) {
 		m_pushDataManager = pushDataManager;
 	}
@@ -102,7 +108,8 @@ public class MarketDataManager {
 	 */
 	public void putDepthData(MarketDepthData data) {
 		m_depthDataMap.put(data.m_lowCode, data);
-		m_pushDataManager.addDepthPushPair(data.copy());
+		MarketDepthData copyData = data.copy();
+		m_pushDataManager.addDepthPushPair(copyData);
 	}
 
 	/**
@@ -139,12 +146,12 @@ public class MarketDataManager {
 	 */
 	public void putKLineData(KLineCallBackData data) {
 		m_klineDataMap.put(data.hashCode(), data);
-		if(data.getSubData().m_subscription != 0) {
+		if (data.getSubData().m_subscription != 0) {
 			m_pushDataManager.addKLineReqPushPair(data);
-		}else {
+		} else {
 			m_pushDataManager.addKLinePushPair(data);
 		}
-		
+
 	}
 
 	/**
@@ -181,7 +188,8 @@ public class MarketDataManager {
 	 */
 	public void putTickData(MarketTickDetailData data) {
 		m_tickDataMap.put(data.m_lowCode, data);
-		m_pushDataManager.addTickPushPair(data.copy());
+		MarketTickDetailData copyData = data.copy();
+		m_pushDataManager.addTickPushPair(copyData);
 	}
 
 	/**
@@ -193,7 +201,7 @@ public class MarketDataManager {
 		m_tradeDataMap.put(data.m_lowpair, data);
 		m_pushDataManager.addTradePushPair(data.copy());
 	}
-	
+
 	/**
 	 * 获取指定交易对子Trade Data
 	 * 
@@ -204,7 +212,7 @@ public class MarketDataManager {
 		MarketTradeDetailData data = m_tradeDataMap.get(pair);
 		return data.copy();
 	}
-	
+
 	/**
 	 * 获取所有交易对子Trade Data
 	 * 
@@ -220,8 +228,7 @@ public class MarketDataManager {
 		}
 		return result;
 	}
-	
-	
+
 	/**
 	 * 填充所有所有合约的信息，在行情启动的时候接收
 	 * 
@@ -292,7 +299,7 @@ public class MarketDataManager {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * 获取交易对子
 	 * 

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gaia.optional.mapper.OptionalMapper">
+	<resultMap id="optionalStock" type="com.gaia.optional.entity.OptionalStock" >
+		<result  column="id"  		jdbcType="INTEGER"  property="id"/>
+		<result  column="keyValue"  jdbcType="VARCHAR"  property="keyValue"/>
+		<result  column="orderNum"  jdbcType="TINYINT"  property="orderNum"/>
+		<result  column="type"  	jdbcType="TINYINT"  property="type"/>
+	</resultMap>
+	<insert id="add" parameterType="com.gaia.optional.entity.OptionalStock">
+			insert into optionalStock(keyValue, orderNum, type) 
+					values (#{keyValue}, #{orderNum}, #{type})
+	</insert>
+	
+	<delete id="delete" parameterType="com.gaia.optional.entity.OptionalStock">
+			delete from optionalStock where keyValue = #{keyValue}
+	</delete>
+	
+	<select id="query" resultType="com.gaia.optional.entity.OptionalStock" >
+			select * from optionalStock where keyValue like concat ('%',#{keyValue},'%')
+	</select>
+	
+	
+</mapper>

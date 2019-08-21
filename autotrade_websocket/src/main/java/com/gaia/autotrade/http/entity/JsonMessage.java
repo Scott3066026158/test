@@ -1,4 +1,4 @@
-package com.gaia.autotrade.http.bean;
+package com.gaia.autotrade.http.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
@@ -10,11 +10,11 @@ public class JsonMessage {
 	private String errCode;
 	private String errMsg;
 	private String code;
-	
+
 	public String getCode() {
 		return code;
 	}
-	
+
 	@JSONField(name = "code")
 	public void setCode(String code) {
 		this.code = code;
@@ -28,7 +28,6 @@ public class JsonMessage {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-
 
 	public String getCh() {
 		return ch;

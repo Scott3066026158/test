@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.gaia.autotrade.owsock.manager.MarketDataManager;
+import com.gaia.autotrade.owsock.market_bean.MarketTradeDetailData;
 import com.gaia.autotrade.ws.bean.SubDataBean;
 import com.gaia.autotrade.ws.bean.WebSocketServletRequest;
 import com.gaia.autotrade.ws.bean.WebSocketServletResponse;
@@ -30,17 +31,23 @@ public class MarketTradeDetailSerivice extends MarketBaseService {
 		wsSerManager.addService(this);
 	}
 
+	// 在订阅管理器中注册
+	@Autowired
+	private void setWebSocketSubManager(WebSocketSubManager subDataManager) {
+		m_subDataManager = subDataManager;
+	}
+	
 	@Override
 	public int RevWsSub(WebSocketServletRequest request, WebSocketServletResponse response) {
-		String pair = (String)request.getParams().get("pair");
-		String sid = (String)request.getParams().get("sid");
-		if (m_mkDataManager.isExistPair(pair)) {
+		String pair = (String) request.getParams().get("pair");
+		if (!m_mkDataManager.isExistPair(pair)) {
 			response.setStatus(PublicField.FAIL_STATUS);
 			response.setMsg("Pair：" + pair + ",不是一个合法的Pair"); // 对子
+			return -1;
 		}
 		SubDataBean bean = new SubDataBean();
 		bean.setPair(pair);
-		bean.setSid(sid);
+		bean.setSid(request.getSid());
 		bean.setTopic(request.getTopic());
 		m_subDataManager.putCallBackTick(bean);
 		response.setStatus(PublicField.SUCCESSFUL_STATUS);
@@ -50,7 +57,16 @@ public class MarketTradeDetailSerivice extends MarketBaseService {
 
 	@Override
 	public int RevWsReq(WebSocketServletRequest request, WebSocketServletResponse response) {
-		revNoProvideReq(request, response);
+		String pair = (String) request.getParams().get("pair");
+		if (!m_mkDataManager.isExistPair(pair)) {
+			response.setStatus(PublicField.FAIL_STATUS);
+			response.setMsg("Pair：" + pair + ",不是一个合法的Pair"); // 对子
+			return -1;
+		}
+		MarketTradeDetailData tick = m_mkDataManager.getTradeData(pair);
+		response.setStatus(PublicField.SUCCESSFUL_STATUS);
+		response.setRequestParms(request.getTopic());
+		response.setData(tick);
 		return 0;
 	}
 }

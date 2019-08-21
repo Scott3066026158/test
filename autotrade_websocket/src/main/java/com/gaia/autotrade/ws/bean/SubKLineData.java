@@ -1,7 +1,7 @@
 package com.gaia.autotrade.ws.bean;
 
 public class SubKLineData {
-	
+
 	// 会话id
 	public String m_sid;
 	// topic
@@ -22,8 +22,7 @@ public class SubKLineData {
 	public double m_startDate;
 	// 结束日期
 	public double m_endDate;
-	
-	
+
 	public SubKLineData copy() {
 		SubKLineData subKLineData = new SubKLineData();
 		subKLineData.m_sid = this.m_sid;
@@ -38,7 +37,7 @@ public class SubKLineData {
 		subKLineData.m_endDate = this.m_endDate;
 		return subKLineData;
 	}
-	
+
 	public void copySubData(SubKLineData data) {
 		this.m_code = new String(data.m_code);
 		this.m_lowCode = new String(data.m_lowCode);
@@ -49,21 +48,20 @@ public class SubKLineData {
 		this.m_startDate = data.m_startDate;
 		this.m_endDate = data.m_endDate;
 	}
-	
+
 	public String getKey() {
 		String key = m_code + m_lowCode + m_cycle + m_subscription + m_type + m_startDate + m_endDate;
 		return key;
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		return obj.hashCode() == this.hashCode();
 	}
-	
+
 	@Override
-    public int hashCode()
-    {
+	public int hashCode() {
 		String key = getKey();
 		return key.hashCode();
-    }
+	}
 }

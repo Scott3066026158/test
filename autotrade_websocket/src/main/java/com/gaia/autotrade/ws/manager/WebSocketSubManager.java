@@ -29,7 +29,7 @@ public class WebSocketSubManager {
 		// 设置订阅者中的行情引用
 		m_marketDataManager.setWebSocketSubManager(this);
 	}
-	
+
 	// Depth数据订阅集合 (即到即发)
 	private ConcurrentHashMap<String, ConcurrentHashMap<String, SubDataBean>> m_depthDataCallBackSubMap = new ConcurrentHashMap<String, ConcurrentHashMap<String, SubDataBean>>();
 	// Tick数据订阅集合 (即到即发)
@@ -205,10 +205,11 @@ public class WebSocketSubManager {
 		}
 		return true;
 	}
-	
+
 	// 删除Tick订阅
 	public boolean removeCallBackTick(String sid) {
-		Iterator<Entry<String, ConcurrentHashMap<String, SubDataBean>>> iter = m_tickDataCallBackSubMap.entrySet().iterator();
+		Iterator<Entry<String, ConcurrentHashMap<String, SubDataBean>>> iter = m_tickDataCallBackSubMap.entrySet()
+				.iterator();
 		while (iter.hasNext()) {
 			Entry<String, ConcurrentHashMap<String, SubDataBean>> entry = iter.next();
 			ConcurrentHashMap<String, SubDataBean> subMap = entry.getValue();
@@ -216,7 +217,7 @@ public class WebSocketSubManager {
 		}
 		return true;
 	}
-	
+
 	// 添加Trade订阅
 	public boolean putCallBackTrade(SubDataBean bean) {
 		if (m_tradeDataCallBackSubMap.containsKey(bean.getPair())) {
@@ -232,8 +233,7 @@ public class WebSocketSubManager {
 		m_marketDataPusher.addTradePushPair(data);
 		return true;
 	}
-	
-	
+
 	// 获取TRade订阅者集合(浅克隆)
 	public Map<String, SubDataBean> getAllCallBackTradeByNoCopy(String pair) {
 		if (m_tradeDataCallBackSubMap.containsKey(pair)) {
@@ -245,8 +245,6 @@ public class WebSocketSubManager {
 			return null;
 		}
 	}
-	
-
 
 	// 获取KLine订阅者集合(深克隆)
 	public Map<String, SubKLineData> getAllCallBackKLine(Integer key) {
@@ -264,15 +262,16 @@ public class WebSocketSubManager {
 			return null;
 		}
 	}
-	
+
 	// 获取所有订阅者
-	public List<SubKLineData> getKLineSubList(){
+	public List<SubKLineData> getKLineSubList() {
 		List<SubKLineData> result = new ArrayList<SubKLineData>();
-		Iterator<Map.Entry<Integer, ConcurrentHashMap<String, SubKLineData>>> iter = m_klineDataCallBackSubMap.entrySet().iterator();
+		Iterator<Map.Entry<Integer, ConcurrentHashMap<String, SubKLineData>>> iter = m_klineDataCallBackSubMap
+				.entrySet().iterator();
 		while (iter.hasNext()) {
 			Entry<Integer, ConcurrentHashMap<String, SubKLineData>> entry = iter.next();
 			Iterator<Entry<String, SubKLineData>> subMap = entry.getValue().entrySet().iterator();
-			while(subMap.hasNext()) {
+			while (subMap.hasNext()) {
 				SubKLineData data = subMap.next().getValue();
 				result.add(data);
 				break;
@@ -331,7 +330,8 @@ public class WebSocketSubManager {
 
 	// 根据sid删除KLine订阅者
 	public boolean removeCallBackKLine(String sid) {
-		Iterator<Entry<Integer, ConcurrentHashMap<String, SubKLineData>>> iter = m_klineDataCallBackSubMap.entrySet().iterator();
+		Iterator<Entry<Integer, ConcurrentHashMap<String, SubKLineData>>> iter = m_klineDataCallBackSubMap.entrySet()
+				.iterator();
 		while (iter.hasNext()) {
 			Entry<Integer, ConcurrentHashMap<String, SubKLineData>> entry = iter.next();
 			ConcurrentHashMap<String, SubKLineData> subMap = entry.getValue();
@@ -339,26 +339,26 @@ public class WebSocketSubManager {
 		}
 		return true;
 	}
-	
-	//添加K线请求者
+
+	// 添加K线请求者
 	public boolean putCallBackKLineReq(Integer hashKey, SubKLineData subData) {
 		m_klineDataCallBackReqMap.put(hashKey, subData);
 		return true;
 	}
-	
-	//删除K线请求者
+
+	// 删除K线请求者
 	public boolean removeCallBackKLineReq(Integer hashKey) {
 		m_klineDataCallBackReqMap.remove(hashKey);
 		return true;
 	}
-	
-	//K线请求者
+
+	// K线请求者
 	public SubKLineData getCallBackKLineReq(Integer hashKey) {
 		SubKLineData data = m_klineDataCallBackReqMap.get(hashKey);
-		if(data == null) {
+		if (data == null) {
 			return null;
 		}
 		return data.copy();
 	}
-	
+
 }

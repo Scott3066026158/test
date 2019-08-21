@@ -49,24 +49,24 @@ public class MarketKLineService extends MarketBaseService {
 	private void setWebSocketSubManager(WebSocketSubManager subDataManager) {
 		m_subDataManager = subDataManager;
 	}
-	
+
 	@Autowired
 	private void setQuoteService(QuoteService quoteService) {
 		m_quoteService = quoteService;
 	}
 
 	@Override
-	public int RevWsSub(WebSocketServletRequest request, WebSocketServletResponse response) throws Exception{
+	public int RevWsSub(WebSocketServletRequest request, WebSocketServletResponse response) throws Exception {
 		Map<String, Object> params = request.getParams();
-		String pair = (String)params.get("pair");
-		String param = (String)params.get("param");
+		String pair = (String) params.get("pair");
+		String param = (String) params.get("param");
 		if (!m_mkDataManager.isExistPair(pair)) {
 			response.setStatus(PublicField.FAIL_STATUS);
 			response.setMsg("Pair：" + pair + ",不是一个合法的Pair");
 			return -1;
 		}
 		int cycle = checkParam(param);
-		if(cycle == -1){
+		if (cycle == -1) {
 			response.setStatus(PublicField.FAIL_STATUS);
 			response.setMsg("Param：" + param + ",不是一个支持的周期参数");
 			return -1;
@@ -83,7 +83,7 @@ public class MarketKLineService extends MarketBaseService {
 		subParam.m_lowCode = pair;
 		subParam.m_code = m_mkDataManager.getTradePair(pair);
 		m_subDataManager.putCallBackKLine(subParam.hashCode(), subParam);
-		if(m_quoteService.GetHistoryDatas(subParam) < 0) {
+		if (m_quoteService.GetHistoryDatas(subParam) < 0) {
 			m_subDataManager.removeCallBackKLineReq(subParam.hashCode());
 			response.setStatus(PublicField.FAIL_STATUS);
 			response.setMsg("KLine数据请求失败");
@@ -97,22 +97,22 @@ public class MarketKLineService extends MarketBaseService {
 	@Override
 	public int RevWsReq(WebSocketServletRequest request, WebSocketServletResponse response) throws Exception {
 		Map<String, Object> params = request.getParams();
-		String pair = (String)params.get("pair");
-		String param = (String)params.get("param");
+		String pair = (String) params.get("pair");
+		String param = (String) params.get("param");
 		long from = 0;
 		long to = 0;
-		if(!params.containsKey("from")) {
+		if (!params.containsKey("from")) {
 			from = System.currentTimeMillis() / 1000 - 60;
-		}else {
-			from = (long)params.get("from");
+		} else {
+			from = (long) params.get("from");
 		}
-		
-		if(!params.containsKey("to")) {
+
+		if (!params.containsKey("to")) {
 			to = System.currentTimeMillis() / 1000 - 60;
-		}else {
-			to =  (long)params.get("to");
+		} else {
+			to = (long) params.get("to");
 		}
-		if(CheckTime(from, to)) {
+		if (CheckTime(from, to)) {
 			response.setStatus(PublicField.FAIL_STATUS);
 			response.setMsg("请检查from与to参数");
 			return -1;
@@ -123,7 +123,7 @@ public class MarketKLineService extends MarketBaseService {
 			return -1;
 		}
 		int cycle = checkParam(param);
-		if(cycle == -1){
+		if (cycle == -1) {
 			response.setStatus(PublicField.FAIL_STATUS);
 			response.setMsg("Param：" + param + ",不是一个支持的周期参数");
 			return -1;
@@ -140,10 +140,10 @@ public class MarketKLineService extends MarketBaseService {
 		subParam.m_endDate = to;
 		subParam.m_lowCode = pair;
 		subParam.m_code = m_mkDataManager.getTradePair(pair);
-		
+
 		m_subDataManager.putCallBackKLineReq(subParam.hashCode(), subParam);
-		
-		if(m_quoteService.GetHistoryDatas(subParam) < 0) {
+
+		if (m_quoteService.GetHistoryDatas(subParam) < 0) {
 			m_subDataManager.removeCallBackKLineReq(subParam.hashCode());
 			response.setStatus(PublicField.FAIL_STATUS);
 			response.setMsg("KLine数据请求失败");
@@ -155,42 +155,40 @@ public class MarketKLineService extends MarketBaseService {
 	}
 
 	private boolean CheckTime(long from, long to) {
-		if(to - from < 60) return false;
+		if (to - from < 60)
+			return false;
 		return true;
 	}
-	
-	//检查周期参数
+
+	// 检查周期参数
 	private int checkParam(String param) {
-		switch(param) {
-			case "1min":
-				return 1;
-			case "5min":
-				return 5;
-			case "15min":
-				return 15;
-			case "30min":
-				return 30;
-			case "60min":
-				return 60;
-			case "1day":
-				return 24 * 60;
-			case "1week":
-				return 7 * 24 * 60;
-			case "1mon":
-				return 30 * 24 * 60;
-			case "1year":
-				return 365 * 24 * 60;
-			default:
-				return -1;
+		switch (param) {
+		case "1min":
+			return 1;
+		case "5min":
+			return 5;
+		case "15min":
+			return 15;
+		case "30min":
+			return 30;
+		case "60min":
+			return 60;
+		case "1day":
+			return 24 * 60;
+		case "1week":
+			return 7 * 24 * 60;
+		case "1mon":
+			return 30 * 24 * 60;
+		case "1year":
+			return 365 * 24 * 60;
+		default:
+			return -1;
 		}
 	}
-	
-	public boolean IsNull(String...params)
-	{
-		for(String param : params)
-		{
-			if(param == null || param.equals(""))
-			{
+
+	public boolean IsNull(String... params) {
+		for (String param : params) {
+			if (param == null || param.equals("")) {
 				return true;
 			}
 		}

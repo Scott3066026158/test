@@ -31,11 +31,16 @@ public class MarketTickDetailService extends MarketBaseService {
 	private void setWebSocketServiceManager(WebSocketServiceManager wsSerManager) {
 		wsSerManager.addService(this);
 	}
+	
+	// 在订阅管理器中注册
+	@Autowired
+	private void setWebSocketSubManager(WebSocketSubManager subDataManager) {
+		m_subDataManager = subDataManager;
+	}
 
 	@Override
 	public int RevWsSub(WebSocketServletRequest request, WebSocketServletResponse response) {
-		String pair = (String)request.getParams().get("pair");
-		String sid = (String)request.getParams().get("sid");
+		String pair = (String) request.getParams().get("pair");
 		if (!m_mkDataManager.isExistPair(pair)) {
 			response.setStatus(PublicField.FAIL_STATUS);
 			response.setMsg("Pair：" + pair + ",不是一个合法的Pair"); // 对子
@@ -43,7 +48,7 @@ public class MarketTickDetailService extends MarketBaseService {
 		}
 		SubDataBean bean = new SubDataBean();
 		bean.setPair(pair);
-		bean.setSid(sid);
+		bean.setSid(request.getSid());
 		bean.setTopic(request.getTopic());
 		m_subDataManager.putCallBackTick(bean);
 		response.setStatus(PublicField.SUCCESSFUL_STATUS);
@@ -53,8 +58,8 @@ public class MarketTickDetailService extends MarketBaseService {
 
 	@Override
 	public int RevWsReq(WebSocketServletRequest request, WebSocketServletResponse response) {
-		String pair = (String)request.getParams().get("pair");
-		String sid = (String)request.getParams().get("sid");
+		String pair = (String) request.getParams().get("pair");
+		String sid = (String) request.getParams().get("sid");
 		if (!m_mkDataManager.isExistPair(pair)) {
 			response.setStatus(PublicField.FAIL_STATUS);
 			response.setMsg("Pair：" + pair + ",不是一个合法的Pair"); // 对子

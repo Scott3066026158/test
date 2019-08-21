@@ -101,7 +101,7 @@ public class QuoteService extends BaseService {
 
 	private void RevPushKLine(Binary binary) {
 		KLineCallBackData klineSubData = new KLineCallBackData();
-		
+
 		GetHistoryDatas(klineSubData, binary);
 		m_marketDataManager.putKLineData(klineSubData);
 	}
@@ -114,7 +114,6 @@ public class QuoteService extends BaseService {
 		if (size > 0) {
 			for (int i = 0; i < size; i++) {
 				SecurityLatestDataTiny data = datas.get(i);
-				System.out.println(data);
 			}
 		}
 	}
@@ -345,9 +344,9 @@ public class QuoteService extends BaseService {
 	 */
 	public static int GetHistoryDatas(KLineCallBackData klineSubData, Binary binary) {
 		try {
-			SubKLineData dataInfo = new  SubKLineData();
+			SubKLineData dataInfo = new SubKLineData();
 			ArrayList<MarketKLineData> datas = new ArrayList<MarketKLineData>();
-			
+
 			dataInfo.m_code = binary.ReadString();
 			dataInfo.m_lowCode = dataInfo.m_code.replace("/", "").toLowerCase();
 			dataInfo.m_type = (int) binary.ReadChar();

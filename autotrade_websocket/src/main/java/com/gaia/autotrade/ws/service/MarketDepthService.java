@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.gaia.autotrade.owsock.manager.MarketDataManager;
+import com.gaia.autotrade.owsock.market_bean.MarketDepthData;
 import com.gaia.autotrade.ws.bean.SubDataBean;
 import com.gaia.autotrade.ws.bean.WebSocketServletRequest;
 import com.gaia.autotrade.ws.bean.WebSocketServletResponse;
@@ -40,8 +41,8 @@ public class MarketDepthService extends MarketBaseService {
 	@Override
 	public int RevWsSub(WebSocketServletRequest request, WebSocketServletResponse response) {
 		Map<String, Object> params = request.getParams();
-		String pair = (String)params.get("pair");
-		String param = (String)params.get("param");
+		String pair = (String) params.get("pair");
+		String param = (String) params.get("param");
 		if (!m_mkDataManager.isExistPair(pair)) {
 			response.setStatus(PublicField.FAIL_STATUS);
 			response.setMsg("Pair：" + pair + ",不是一个合法的Pair");
@@ -58,7 +59,17 @@ public class MarketDepthService extends MarketBaseService {
 
 	@Override
 	public int RevWsReq(WebSocketServletRequest request, WebSocketServletResponse response) {
-		revNoProvideReq(request, response);
+		Map<String, Object> params = request.getParams();
+		String pair = (String) params.get("pair");
+		String param = (String) params.get("param");
+		if (!m_mkDataManager.isExistPair(pair)) {
+			response.setStatus(PublicField.FAIL_STATUS);
+			response.setMsg("Pair：" + pair + ",不是一个合法的Pair");
+		}
+		MarketDepthData depth = m_mkDataManager.getDepthData(pair);
+		response.setStatus(PublicField.SUCCESSFUL_STATUS);
+		response.setRequestParms(request.getTopic());
+		response.setData(depth);
 		return 0;
 	}
 }

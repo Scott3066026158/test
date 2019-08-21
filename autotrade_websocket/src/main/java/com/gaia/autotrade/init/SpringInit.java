@@ -10,28 +10,8 @@ import com.gaia.autotrade.owsock.service.QuoteService;
 @Component
 public class SpringInit implements InitializingBean {
 
-	// 行情服务
-	private QuoteService m_quoteService;
-
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Connect();
-	}
-
-	@Autowired
-	public void setQuoteService(QuoteService quoteService) {
-		m_quoteService = quoteService;
-	}
-
-	public void Connect() {
-		String url = "allinex.io:5002";
-		BaseService.AddService(m_quoteService);
-		int quoteSocket = m_quoteService.ConnectServer(url);
-		if (quoteSocket < 0) {
-			System.out.println("连接失败，url:" + url);
-		} else {
-			System.out.println("连接成功，url:" + url);
-		}
 	}
 
 }

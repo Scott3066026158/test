@@ -1,4 +1,4 @@
-package com.gaia.autotrade.http.bean;
+package com.gaia.autotrade.http.entity;
 
 public class SymbolInfo {
 

@@ -7,7 +7,7 @@ public class MarketTradeDetailData {
 	public double m_price;
 	public double m_tradetime;
 	public String m_diretion;
-	
+
 	public MarketTradeDetailData copy() {
 		MarketTradeDetailData data = new MarketTradeDetailData();
 		data.m_pair = new String(this.m_pair);
@@ -18,7 +18,7 @@ public class MarketTradeDetailData {
 		data.m_diretion = this.m_diretion;
 		return data;
 	}
-	
+
 	public void tickToTradeDetailData(MarketTickDetailData data) {
 		this.m_amount = data.m_dVolume;
 		this.m_diretion = "";

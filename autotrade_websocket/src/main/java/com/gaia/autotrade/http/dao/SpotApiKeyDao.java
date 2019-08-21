@@ -1,4 +1,4 @@
-package com.gaia.autotrade.http.spot_dao;
+package com.gaia.autotrade.http.dao;
 
 import java.util.Map;
 

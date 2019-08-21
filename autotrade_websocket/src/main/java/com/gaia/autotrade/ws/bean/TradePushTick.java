@@ -1,7 +1,7 @@
 package com.gaia.autotrade.ws.bean;
 
 public class TradePushTick {
-	
+
 	// 唯一成交ID
 	private Integer id;
 	// 成交量
@@ -12,8 +12,7 @@ public class TradePushTick {
 	private Integer ts;
 	// 成交主动方 (taker的订单方向) : 'buy' or 'sell'
 	private String direction;
-	
-	
+
 	public Integer getId() {
 		return id;
 	}

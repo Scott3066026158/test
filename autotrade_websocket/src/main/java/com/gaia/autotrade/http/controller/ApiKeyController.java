@@ -1,20 +1,20 @@
-package com.gaia.autotrade.http.spot_controller;
+package com.gaia.autotrade.http.controller;
 
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.gaia.autotrade.http.entity.User;
+
 @RestController
-public class SpotApiKeyController {
+public class ApiKeyController {
 
 	@RequestMapping(value = "/open/api_key/create", method = RequestMethod.POST)
-	public String createApiKey(@RequestParam(value = "username", required = true) String username,
-			@RequestParam(value = "traderid", required = true) String traderid,
-			@RequestParam(value = "privilege", required = true) String privilege,
-			@RequestParam(value = "remark", required = false) String remark,
-			@RequestParam(value = "ipgroup", required = false) String ipgroup) {
-
+	public String createApiKey(@RequestBody User user) {
+		
+		System.out.println(user);
 		return null;
 	}
 
