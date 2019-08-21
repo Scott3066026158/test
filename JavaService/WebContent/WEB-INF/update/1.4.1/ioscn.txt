@@ -1,0 +1,1 @@
+{"language":"cn","platform":"ios","versionString":"1.4.1","versionNumber":"141","versionTime":"2019-07-01T15:00","important":true,"infos":["1.K线界面优化"]}

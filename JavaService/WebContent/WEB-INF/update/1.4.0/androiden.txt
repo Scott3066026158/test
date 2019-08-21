@@ -1,0 +1,1 @@
+{"language":"en","platform":"android","versionString":"1.4.0","versionNumber":"140","versionTime":"2019-05-20T18:00","important":true,"infos":["1.TradeService optimize"]}

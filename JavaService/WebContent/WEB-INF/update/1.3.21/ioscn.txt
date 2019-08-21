@@ -1,0 +1,1 @@
+{"important":true,"infos":["1.K线与K线横屏界面优化","2.K线指标与K线图美化","3.汇率设置界面优化","4.新增审核提示框","5.新增用户权限类型字段"],"language":"cn","platform":"ios","versionNumber":1321,"versionString":"1.3.21","versionTime":"2018-12-25T17:00"}

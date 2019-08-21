@@ -1,0 +1,1 @@
+{"language":"en","platform":"ios","versionString":"1.3.26","versionNumber":"1326","versionTime":"2019-03-14T18:00","important":true,"infos":["1.Add Google authentication","2.New pattern unlock and fingerprint recognition functions","3.KYC function optimization"]}

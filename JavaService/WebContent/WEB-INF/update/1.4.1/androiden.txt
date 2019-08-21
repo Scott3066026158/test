@@ -1,0 +1,1 @@
+{"language":"en","platform":"android","versionString":"1.4.1","versionNumber":"141","versionTime":"2019-07-01T15:00","important":true,"infos":["1.KLine interface optimization"]}

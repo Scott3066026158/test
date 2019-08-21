@@ -1,0 +1,1 @@
+{"important":false,"infos":["1.OpenOrder和HistoryOrder新增排序显示","2.K线页面与K线横屏页面美化","3.去除身份认证页面重新上传字样","4.市场页面小数点位数修正","5.修复版本更新错误"],"language":"cn","platform":"ios","versionNumber":1320,"versionString":"1.3.20","versionTime":"2018-12-20T14:00"}

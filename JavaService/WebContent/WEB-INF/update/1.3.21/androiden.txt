@@ -1,0 +1,1 @@
+{"important":true,"infos":["1.Optimization of k-line and k-line horizontal screen interface","2.Beautification of K line index and K line graph","3.Exchange rate setting interface optimization","4.Add audit prompt box","5.Add user permission type field"],"language":"en","platform":"android","versionNumber":1321,"versionString":"1.3.21","versionTime":"2018-12-25T17:00"}

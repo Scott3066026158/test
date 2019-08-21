@@ -1,0 +1,1 @@
+{"language":"en","platform":"android","versionString":"1.3.22","versionNumber":"1322","versionTime":"2019-01-04T20:00","important":true,"infos":["1.Authentication page optimization","2.K-line page optimization","3.Version update and page optimization","4.Transaction page optimization","5.Order filtering sideslip frame beautification"]}

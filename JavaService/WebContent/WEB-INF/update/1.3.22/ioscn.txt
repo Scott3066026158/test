@@ -1,0 +1,1 @@
+{"language":"cn","platform":"ios","versionString":"1.3.22","versionNumber":"1322","versionTime":"2019-01-04T20:00","important":true,"infos":["1.身份验证页面优化","2.K线页面优化","3.版本更新页面优化","4.交易页面优化","5.订单过滤侧滑框美化"]}
